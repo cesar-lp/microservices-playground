@@ -1,11 +1,11 @@
-package com.microservices.item
+package com.microservices.book
 
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 
 @SpringBootApplication
-class ItemServiceApplication
+class BookServiceApplication
 
 fun main(args: Array<String>) {
-	runApplication<ItemServiceApplication>(*args)
+	runApplication<BookServiceApplication>(*args)
 }
