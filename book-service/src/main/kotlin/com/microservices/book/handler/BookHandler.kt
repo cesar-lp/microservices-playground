@@ -4,6 +4,7 @@ import com.microservices.book.entity.Book
 import com.microservices.book.repository.BookRepository
 import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.server.ServerRequest
+import org.springframework.web.reactive.function.server.ServerResponse
 import org.springframework.web.reactive.function.server.ServerResponse.created
 import org.springframework.web.reactive.function.server.ServerResponse.noContent
 import org.springframework.web.reactive.function.server.ServerResponse.ok
@@ -15,10 +16,11 @@ import java.net.URI
 @Component
 class BookHandler(private val repository: BookRepository) {
 
-	fun getAllBooks(req: ServerRequest) =
-		ok().body(repository.findAll())
+	private val baseUri = "/books"
 
-	fun getBookById(req: ServerRequest) =
+	fun getAllBooks(req: ServerRequest) = ok().body(repository.findAll())
+
+	fun findBook(req: ServerRequest) =
 		repository
 			.findById(req.pathVariable("id"))
 			.flatMap { ok().body<Book>(Mono.just(it)) }
@@ -26,18 +28,20 @@ class BookHandler(private val repository: BookRepository) {
 	fun saveBook(req: ServerRequest) =
 		req.bodyToMono<Book>()
 			.flatMap { repository.save(it) }
-			.flatMap { created(URI.create("/items/${it.id}")).body(Mono.just(it)) }
+			.flatMap { created(URI.create("$baseUri/${it.id}")).body(Mono.just(it)) }
 
 	fun updateBook(req: ServerRequest) =
-		repository.findById(req.pathVariable("id"))
+		repository
+			.findById(req.pathVariable("id"))
 			.flatMap { existing ->
 				req.bodyToMono<Book>().flatMap { updated ->
 					existing.ranking = updated.ranking
-					ok().body(repository.save(existing))
+					repository.save(existing)
 				}
-			}
+			}.flatMap { ok().body(Mono.just(it)) }
 
-	fun deleteBook(req: ServerRequest) =
+	fun deleteBook(req: ServerRequest): Mono<ServerResponse> {
 		repository.deleteById(req.pathVariable("id"))
-			.flatMap { noContent().build() }
+		return noContent().build()
+	}
 }

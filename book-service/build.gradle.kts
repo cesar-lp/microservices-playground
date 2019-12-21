@@ -29,6 +29,7 @@ dependencies {
 		exclude(group = "org.junit.vintage", module = "junit-vintage-engine")
 	}
 	testImplementation("io.projectreactor:reactor-test")
+	testImplementation("io.mockk:mockk:1.9.3")
 }
 
 tasks.withType<Test> {
