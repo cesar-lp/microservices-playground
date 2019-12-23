@@ -1,0 +1,3 @@
+github.com/cesar-lp/microservices-playground v0.0.0-20191222151319-9ca6ce20f2e9 h1:LUPNdopRapVIfKDZbhbC/I9KlKEOHyojviMfv48zK/8=
+github.com/gorilla/mux v1.7.3 h1:gnP5JzjVOuiZD07fKKToCAOjS0yOpj/qPETTXCCS6hw=
+github.com/gorilla/mux v1.7.3/go.mod h1:1lud6UwP+6orDFRuTfBEV8e9/aOM/c4fVVCaMa2zaAs=
