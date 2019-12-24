@@ -1,9 +1,11 @@
 package handlers
 
 import (
+	"errors"
 	"math/rand"
 	"strconv"
 
+	. "github.com/cesar-lp/microservices-playground/movie-service/main/common"
 	. "github.com/cesar-lp/microservices-playground/movie-service/main/models"
 )
 
@@ -14,13 +16,13 @@ var movies = []Movie{
 }
 
 // GetAll returns all movies
-func GetAll() []Movie {
-	return movies
+func GetAll() HandlerResponse {
+	return Ok(movies)
 }
 
 // Get returns a Movie for a given ID
-func Get(id string) Movie {
-	pos := 0
+func Get(id string) HandlerResponse {
+	pos := -1
 
 	for i, movie := range movies {
 		if movie.ID == id {
@@ -29,19 +31,23 @@ func Get(id string) Movie {
 		}
 	}
 
-	return movies[pos]
+	if pos == -1 {
+		return NotFound(errors.New("Movie not found for id " + id))
+	} else {
+		return Ok(movies[pos])
+	}
 }
 
 // Save a movie
-func Save(newMovie Movie) Movie {
+func Save(newMovie Movie) HandlerResponse {
 	newMovie.ID = strconv.Itoa(rand.Intn(10000000))
 	movies = append(movies, newMovie)
-	return newMovie
+	return Created(newMovie)
 }
 
 // Update a movie
-func Update(id string, updatedMovie Movie) Movie {
-	pos := 0
+func Update(id string, updatedMovie Movie) HandlerResponse {
+	pos := -1
 
 	for i, movie := range movies {
 		if movie.ID == id {
@@ -51,15 +57,28 @@ func Update(id string, updatedMovie Movie) Movie {
 		}
 	}
 
-	return movies[pos]
+	if pos == -1 {
+		return NotFound(errors.New("Movie not found for id " + id))
+	} else {
+		return Ok(movies[pos])
+	}
 }
 
 // Delete a movie for a given ID
-func Delete(id string) {
+func Delete(id string) HandlerResponse {
+	notFound := true
+
 	for index, movie := range movies {
 		if movie.ID == id {
 			movies = append(movies[:index], movies[index+1:]...)
-			return
+			notFound = false
+			break
 		}
+	}
+
+	if notFound {
+		return NotFound(errors.New("Movie not found for id " + id))
+	} else {
+		return NoContent()
 	}
 }
