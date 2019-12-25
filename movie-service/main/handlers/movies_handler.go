@@ -2,40 +2,39 @@ package handlers
 
 import (
 	"errors"
-	"math/rand"
-	"strconv"
 
 	. "github.com/cesar-lp/microservices-playground/movie-service/main/common"
+	. "github.com/cesar-lp/microservices-playground/movie-service/main/database"
+	"github.com/cesar-lp/microservices-playground/movie-service/main/models"
 	. "github.com/cesar-lp/microservices-playground/movie-service/main/models"
+	"github.com/jinzhu/gorm"
 )
-
-var movies = []Movie{
-	Movie{ID: "1", Name: "Inception", Rating: 5},
-	Movie{ID: "2", Name: "Interstellar", Rating: 5},
-	Movie{ID: "3", Name: "The Dark Knight", Rating: 5},
-}
 
 // GetAll returns all movies
 func GetAll() HandlerResponse {
+	movies := []models.Movie{}
+
+	var err = Database().Debug().Model(&models.Movie{}).Limit(50).Find(&movies).Error
+
+	if err != nil {
+		return InternalServerError(err)
+	}
 	return Ok(movies)
 }
 
 // Get returns a Movie for a given ID
 func Get(id string) HandlerResponse {
-	pos := -1
+	movie := models.Movie{}
 
-	for i, movie := range movies {
-		if movie.ID == id {
-			pos = i
-			break
+	var err = Database().Debug().Model(&models.Movie{}).Where("id = ?", id).Take(&movie).Error
+
+	if err != nil {
+		if gorm.IsRecordNotFoundError(err) {
+			return NotFound(errors.New("Movie not found for id " + id))
 		}
+		return InternalServerError(err)
 	}
-
-	if pos == -1 {
-		return NotFound(errors.New("Movie not found for id " + id))
-	}
-
-	return Ok(movies[pos])
+	return Ok(movie)
 }
 
 // Save a movie
@@ -46,50 +45,44 @@ func Save(newMovie Movie) HandlerResponse {
 		return UnprocessableEntity(fieldErrors)
 	}
 
-	newMovie.ID = strconv.Itoa(rand.Intn(10000000))
-	movies = append(movies, newMovie)
+	newMovie.Initialize()
+
+	var err = Database().Debug().Model(&models.Movie{}).Create(&newMovie).Error
+
+	if err != nil {
+		return InternalServerError(err)
+	}
 	return Created(newMovie)
 }
 
 // Update a movie
 func Update(id string, updatedMovie Movie) HandlerResponse {
-	pos := -1
 	fieldErrors := updatedMovie.Validate()
 
 	if len(fieldErrors) > 0 {
 		return UnprocessableEntity(fieldErrors)
 	}
 
-	for i, movie := range movies {
-		if movie.ID == id {
-			pos = i
-			movies[i] = updatedMovie
-			break
+	var err = Database().Debug().Model(&models.Movie{}).Where("id = ?", id).Update(&updatedMovie).Error
+
+	if err != nil {
+		if gorm.IsRecordNotFoundError(err) {
+			return NotFound(errors.New("Movie not found for id " + id))
 		}
+		return InternalServerError(err)
 	}
-
-	if pos == -1 {
-		return NotFound(errors.New("Movie not found for id " + id))
-	}
-
-	return Ok(movies[pos])
+	return Ok(&updatedMovie)
 }
 
 // Delete a movie for a given ID
 func Delete(id string) HandlerResponse {
-	notFound := true
+	var err = Database().Debug().Model(&models.Movie{}).Where("id = ?", id).Take(&Movie{}).Delete(&Movie{}).Error
 
-	for index, movie := range movies {
-		if movie.ID == id {
-			movies = append(movies[:index], movies[index+1:]...)
-			notFound = false
-			break
+	if err != nil {
+		if gorm.IsRecordNotFoundError(err) {
+			return NotFound(errors.New("Movie not found for id " + id))
 		}
+		return InternalServerError(err)
 	}
-
-	if notFound {
-		return NotFound(errors.New("Movie not found for id " + id))
-	}
-
 	return NoContent()
 }

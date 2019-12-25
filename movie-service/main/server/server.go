@@ -6,20 +6,24 @@ import (
 	"net/http"
 
 	ctrl "github.com/cesar-lp/microservices-playground/movie-service/main/controllers"
+	db "github.com/cesar-lp/microservices-playground/movie-service/main/database"
 	mw "github.com/cesar-lp/microservices-playground/movie-service/main/middleware"
 	"github.com/gorilla/mux"
+	"github.com/jinzhu/gorm"
 )
 
 // Server structure
 type Server struct {
-	Router *mux.Router
+	Database *gorm.DB
+	Router   *mux.Router
 }
 
 // Configure and returns a server instance
 func Configure() Server {
-	server := Server{}
-	server.Router = getRoutes()
-	return server
+	return Server{
+		Database: db.Connect(),
+		Router:   getRoutes(),
+	}
 }
 
 func getRoutes() *mux.Router {
@@ -35,7 +39,7 @@ func getRoutes() *mux.Router {
 }
 
 // Run the server
-func (server *Server) Run(addr string) {
-	fmt.Println("Server up and running: listening to port 8081")
-	log.Fatal(http.ListenAndServe(addr, server.Router))
+func (server *Server) Run(port string) {
+	fmt.Println("Server up and running: listening to port " + port)
+	log.Fatal(http.ListenAndServe(":"+port, server.Router))
 }

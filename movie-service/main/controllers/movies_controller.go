@@ -24,7 +24,7 @@ func GetMovieByID(w http.ResponseWriter, r *http.Request) {
 // CreateMovie creates and returns the created movie
 func CreateMovie(w http.ResponseWriter, r *http.Request) {
 	var movie Movie
-	_ = json.NewDecoder(r.Body).Decode(&movie)
+	json.NewDecoder(r.Body).Decode(&movie)
 
 	ServerResponse(w, r, handler.Save(movie))
 }
@@ -33,7 +33,7 @@ func CreateMovie(w http.ResponseWriter, r *http.Request) {
 func UpdateMovie(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	var updatedMovie Movie
-	_ = json.NewDecoder(r.Body).Decode(&updatedMovie)
+	json.NewDecoder(r.Body).Decode(&updatedMovie)
 
 	ServerResponse(w, r, handler.Update(params["id"], updatedMovie))
 }

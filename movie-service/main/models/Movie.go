@@ -1,18 +1,25 @@
 package models
 
-import . "github.com/cesar-lp/microservices-playground/movie-service/main/common"
+import (
+	"strconv"
 
-import "strconv"
+	. "github.com/cesar-lp/microservices-playground/movie-service/main/common"
+)
 
 // Movie model
 type Movie struct {
-	ID     string `gorm:"primary_key;auto_increment" json:"id"`
+	ID     int    `gorm:"primary_key;auto_increment" json:"id"`
 	Name   string `gorm:"size:255;not null;unique" json:"name"`
 	Rating int    `json:"rating"`
 }
 
+// Initialize the default values
+func (movie *Movie) Initialize() {
+	movie.ID = 0
+}
+
 // Validate a movie structure
-func (movie Movie) Validate() []FieldError {
+func (movie *Movie) Validate() []FieldError {
 	fieldErrors := make([]FieldError, 0, 2)
 
 	if movie.Name == "" {
