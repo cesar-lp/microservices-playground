@@ -33,13 +33,19 @@ func Get(id string) HandlerResponse {
 
 	if pos == -1 {
 		return NotFound(errors.New("Movie not found for id " + id))
-	} else {
-		return Ok(movies[pos])
 	}
+
+	return Ok(movies[pos])
 }
 
 // Save a movie
 func Save(newMovie Movie) HandlerResponse {
+	fieldErrors := newMovie.Validate()
+
+	if len(fieldErrors) > 0 {
+		return UnprocessableEntity(fieldErrors)
+	}
+
 	newMovie.ID = strconv.Itoa(rand.Intn(10000000))
 	movies = append(movies, newMovie)
 	return Created(newMovie)
@@ -48,6 +54,11 @@ func Save(newMovie Movie) HandlerResponse {
 // Update a movie
 func Update(id string, updatedMovie Movie) HandlerResponse {
 	pos := -1
+	fieldErrors := updatedMovie.Validate()
+
+	if len(fieldErrors) > 0 {
+		return UnprocessableEntity(fieldErrors)
+	}
 
 	for i, movie := range movies {
 		if movie.ID == id {
@@ -59,9 +70,9 @@ func Update(id string, updatedMovie Movie) HandlerResponse {
 
 	if pos == -1 {
 		return NotFound(errors.New("Movie not found for id " + id))
-	} else {
-		return Ok(movies[pos])
 	}
+
+	return Ok(movies[pos])
 }
 
 // Delete a movie for a given ID
@@ -78,7 +89,7 @@ func Delete(id string) HandlerResponse {
 
 	if notFound {
 		return NotFound(errors.New("Movie not found for id " + id))
-	} else {
-		return NoContent()
 	}
+
+	return NoContent()
 }

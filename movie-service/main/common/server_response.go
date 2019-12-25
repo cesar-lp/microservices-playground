@@ -13,12 +13,29 @@ type baseResponse struct {
 	Timestamp time.Time `json:"timestamp"`
 }
 
+type validationResponse struct {
+	Message     string       `json:"message"`
+	FieldErrors []FieldError `json:"fieldErrors"`
+	Path        string       `json:"path"`
+	Timestamp   time.Time    `json:"timestamp"`
+}
+
+// FieldError structure
+type FieldError struct {
+	FieldName    string `json:"fieldName"`
+	Error        string `json:"error"`
+	InvalidValue string `json:"invalidValue"`
+}
+
 // ServerResponse builds a HTTP response based on a handler response
 func ServerResponse(w http.ResponseWriter, r *http.Request, hr HandlerResponse) {
 	switch hr.StatusCode {
 	case 500:
 		w.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(w).Encode(internalServerError(r.RequestURI, hr.Err.Error()))
+	case 422:
+		w.WriteHeader(http.StatusUnprocessableEntity)
+		json.NewEncoder(w).Encode(validationError(r.RequestURI, hr.FieldErrors))
 	case 404:
 		w.WriteHeader(http.StatusNotFound)
 		json.NewEncoder(w).Encode(resourceNotFound(r.RequestURI, hr.Err.Error()))
@@ -39,6 +56,15 @@ func internalServerError(path string, message string) baseResponse {
 		Message:   message,
 		Path:      path,
 		Timestamp: time.Now(),
+	}
+}
+
+func validationError(path string, fieldErrors []FieldError) validationResponse {
+	return validationResponse{
+		Message:     "Validation Failed",
+		FieldErrors: fieldErrors,
+		Path:        path,
+		Timestamp:   time.Now(),
 	}
 }
 
