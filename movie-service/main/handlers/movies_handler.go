@@ -38,7 +38,7 @@ func Get(id string) HandlerResponse {
 }
 
 // Save a movie
-func Save(newMovie Movie) HandlerResponse {
+func Save(newMovie *Movie) HandlerResponse {
 	fieldErrors := newMovie.Validate()
 
 	if len(fieldErrors) > 0 {
@@ -71,7 +71,7 @@ func Update(id string, updatedMovie Movie) HandlerResponse {
 		}
 		return InternalServerError(err)
 	}
-	return Ok(&updatedMovie)
+	return Ok(updatedMovie)
 }
 
 // Delete a movie for a given ID

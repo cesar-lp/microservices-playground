@@ -10,6 +10,7 @@ import (
 	TODO:
 		Logging
 		Tests
+		Retrieve values from environment
 		Minor improvements
 		Cleanup
 */

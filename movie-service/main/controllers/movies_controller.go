@@ -3,6 +3,7 @@ package controllers
 import (
 	"encoding/json"
 	"net/http"
+	"strconv"
 
 	. "github.com/cesar-lp/microservices-playground/movie-service/main/common"
 	handler "github.com/cesar-lp/microservices-playground/movie-service/main/handlers"
@@ -26,7 +27,9 @@ func CreateMovie(w http.ResponseWriter, r *http.Request) {
 	var movie Movie
 	json.NewDecoder(r.Body).Decode(&movie)
 
-	ServerResponse(w, r, handler.Save(movie))
+	hr := handler.Save(&movie)
+	w.Header().Set("Location", r.RequestURI+"/"+strconv.Itoa(movie.ID))
+	ServerResponse(w, r, hr)
 }
 
 // UpdateMovie updates a movie
