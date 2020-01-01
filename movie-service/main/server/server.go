@@ -28,11 +28,11 @@ func Configure() Server {
 
 func getRoutes() *mux.Router {
 	r := mux.NewRouter()
-	r.HandleFunc("/api/movies", ctrl.GetMovies).Methods("GET")
+	r.HandleFunc("/api/movies", ctrl.GetAllMovies).Methods("GET")
 	r.HandleFunc("/api/movies", ctrl.CreateMovie).Methods("POST")
-	r.HandleFunc("/api/movies/{id}", ctrl.GetMovieByID).Methods("GET")
+	r.HandleFunc("/api/movies/{id}", ctrl.GetMovieById).Methods("GET")
 	r.HandleFunc("/api/movies/{id}", ctrl.UpdateMovie).Methods("PUT")
-	r.HandleFunc("/api/movies/{id}", ctrl.DeleteMovie).Methods("DELETE")
+	r.HandleFunc("/api/movies/{id}", ctrl.DeleteMovieById).Methods("DELETE")
 
 	r.Use(mw.JSONMiddleware)
 	return r

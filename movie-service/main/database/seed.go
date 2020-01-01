@@ -18,20 +18,20 @@ func Load() {
 	err := database.Debug().DropTableIfExists(&models.Movie{}).Error
 
 	if err != nil {
-		log.Fatal("Cannot drop table: %v", err)
+		log.Fatalf("Cannot drop table: %v", err)
 	}
 
 	err = database.Debug().AutoMigrate(&models.Movie{}).Error
 
 	if err != nil {
-		log.Fatal("Cannot migrate table: %v", err)
+		log.Fatalf("Cannot migrate table: %v", err)
 	}
 
 	for i, _ := range movies {
 		err = database.Debug().Model(&models.Movie{}).Create(&movies[i]).Error
 
 		if err != nil {
-			log.Fatal("Cannot seed movies table: %v", err)
+			log.Fatalf("Cannot seed movies table: %v", err)
 		}
 	}
 }

@@ -36,6 +36,10 @@ func Connect() *gorm.DB {
 	return database
 }
 
-func Database() *gorm.DB {
+func Configure(db *gorm.DB) {
+	database = db
+}
+
+func Get() *gorm.DB {
 	return database
 }

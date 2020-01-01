@@ -12,14 +12,15 @@ import (
 )
 
 // GetMovies returns all available movies
-func GetMovies(w http.ResponseWriter, r *http.Request) {
-	ServerResponse(w, r, handler.GetAll())
+func GetAllMovies(w http.ResponseWriter, r *http.Request) {
+	ServerResponse(w, r, handler.GetAllMovies())
 }
 
-// GetMovieByID returns a Movie for a given ID
-func GetMovieByID(w http.ResponseWriter, r *http.Request) {
+// GetMovieByID returns a Movie for a given id
+func GetMovieById(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
-	ServerResponse(w, r, handler.Get(params["id"]))
+	id, _ := strconv.Atoi(params["id"])
+	ServerResponse(w, r, handler.GetMovieById(id))
 }
 
 // CreateMovie creates and returns the created movie
@@ -27,22 +28,24 @@ func CreateMovie(w http.ResponseWriter, r *http.Request) {
 	var movie Movie
 	json.NewDecoder(r.Body).Decode(&movie)
 
-	hr := handler.Save(&movie)
-	w.Header().Set("Location", r.RequestURI+"/"+strconv.Itoa(movie.ID))
+	hr := handler.CreateMovie(&movie)
+	w.Header().Set("Location", r.RequestURI+"/"+strconv.Itoa(movie.Id))
 	ServerResponse(w, r, hr)
 }
 
 // UpdateMovie updates a movie
 func UpdateMovie(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
+	id, _ := strconv.Atoi(params["id"])
 	var updatedMovie Movie
 	json.NewDecoder(r.Body).Decode(&updatedMovie)
 
-	ServerResponse(w, r, handler.Update(params["id"], updatedMovie))
+	ServerResponse(w, r, handler.UpdateMovie(id, &updatedMovie))
 }
 
 // DeleteMovie deletes a movie for a given ID
-func DeleteMovie(w http.ResponseWriter, r *http.Request) {
+func DeleteMovieById(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
-	ServerResponse(w, r, handler.Delete(params["id"]))
+	id, _ := strconv.Atoi(params["id"])
+	ServerResponse(w, r, handler.DeleteMovieById(id))
 }

@@ -2,35 +2,32 @@ package handlers
 
 import (
 	"errors"
+	"strconv"
 
 	. "github.com/cesar-lp/microservices-playground/movie-service/main/common"
-	. "github.com/cesar-lp/microservices-playground/movie-service/main/database"
-	"github.com/cesar-lp/microservices-playground/movie-service/main/models"
 	. "github.com/cesar-lp/microservices-playground/movie-service/main/models"
+	"github.com/cesar-lp/microservices-playground/movie-service/main/repositories"
 	"github.com/jinzhu/gorm"
 )
 
+var movieRepository = repositories.MovieStore{}
+
 // GetAll returns all movies
-func GetAll() HandlerResponse {
-	movies := []models.Movie{}
-
-	var err = Database().Debug().Model(&models.Movie{}).Limit(50).Find(&movies).Error
-
+func GetAllMovies() HandlerResponse {
+	movies, err := movieRepository.GetAllMovies()
 	if err != nil {
 		return InternalServerError(err)
 	}
 	return Ok(movies)
 }
 
-// Get returns a Movie for a given ID
-func Get(id string) HandlerResponse {
-	movie := models.Movie{}
-
-	var err = Database().Debug().Model(&models.Movie{}).Where("id = ?", id).Take(&movie).Error
+// Get returns a Movie for a given id
+func GetMovieById(id int) HandlerResponse {
+	movie, err := movieRepository.GetMovieById(id)
 
 	if err != nil {
 		if gorm.IsRecordNotFoundError(err) {
-			return NotFound(errors.New("Movie not found for id " + id))
+			return NotFound(errors.New("Movie not found for id " + strconv.Itoa(id)))
 		}
 		return InternalServerError(err)
 	}
@@ -38,7 +35,7 @@ func Get(id string) HandlerResponse {
 }
 
 // Save a movie
-func Save(newMovie *Movie) HandlerResponse {
+func CreateMovie(newMovie *Movie) HandlerResponse {
 	fieldErrors := newMovie.Validate()
 
 	if len(fieldErrors) > 0 {
@@ -46,41 +43,40 @@ func Save(newMovie *Movie) HandlerResponse {
 	}
 
 	newMovie.Initialize()
-
-	var err = Database().Debug().Model(&models.Movie{}).Create(&newMovie).Error
+	createdMovie, err := movieRepository.CreateMovie(newMovie)
 
 	if err != nil {
 		return InternalServerError(err)
 	}
-	return Created(newMovie)
+	return Created(createdMovie)
 }
 
 // Update a movie
-func Update(id string, updatedMovie Movie) HandlerResponse {
-	fieldErrors := updatedMovie.Validate()
+func UpdateMovie(id int, movieToUpdate *Movie) HandlerResponse {
+	fieldErrors := movieToUpdate.Validate()
 
 	if len(fieldErrors) > 0 {
 		return UnprocessableEntity(fieldErrors)
 	}
 
-	var err = Database().Debug().Model(&models.Movie{}).Where("id = ?", id).Update(&updatedMovie).Error
+	updatedMovie, err := movieRepository.UpdateMovie(id, movieToUpdate)
 
 	if err != nil {
 		if gorm.IsRecordNotFoundError(err) {
-			return NotFound(errors.New("Movie not found for id " + id))
+			return NotFound(errors.New("Movie not found for id " + strconv.Itoa(id)))
 		}
 		return InternalServerError(err)
 	}
 	return Ok(updatedMovie)
 }
 
-// Delete a movie for a given ID
-func Delete(id string) HandlerResponse {
-	var err = Database().Debug().Model(&models.Movie{}).Where("id = ?", id).Take(&Movie{}).Delete(&Movie{}).Error
+// Delete a movie for a given id
+func DeleteMovieById(id int) HandlerResponse {
+	err := movieRepository.DeleteMovieById(id)
 
 	if err != nil {
 		if gorm.IsRecordNotFoundError(err) {
-			return NotFound(errors.New("Movie not found for id " + id))
+			return NotFound(errors.New("Movie not found for id " + strconv.Itoa(id)))
 		}
 		return InternalServerError(err)
 	}

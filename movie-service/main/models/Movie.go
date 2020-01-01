@@ -8,14 +8,14 @@ import (
 
 // Movie model
 type Movie struct {
-	ID     int    `gorm:"primary_key;auto_increment" json:"id"`
+	Id     int    `gorm:"primary_key;auto_increment" json:"id"`
 	Name   string `gorm:"size:255;not null;unique" json:"name"`
 	Rating int    `json:"rating"`
 }
 
 // Initialize the default values
 func (movie *Movie) Initialize() {
-	movie.ID = 0
+	movie.Id = 0
 }
 
 // Validate a movie structure
@@ -25,7 +25,7 @@ func (movie *Movie) Validate() []FieldError {
 	if movie.Name == "" {
 		fieldErrors = append(fieldErrors, FieldError{
 			FieldName:    "name",
-			Error:        "Name can't be empty",
+			Error:        "Name is required",
 			InvalidValue: movie.Name,
 		})
 	}

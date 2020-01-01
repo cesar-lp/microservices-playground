@@ -12,6 +12,7 @@ import (
 		Tests
 		Retrieve values from environment
 		Minor improvements
+		Migrate to Gin?
 		Cleanup
 */
 func main() {
