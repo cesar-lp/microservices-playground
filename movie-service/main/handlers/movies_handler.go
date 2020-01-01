@@ -14,7 +14,7 @@ var movieRepository = repositories.MovieStore{}
 
 // GetAll returns all movies
 func GetAllMovies() HandlerResponse {
-	movies, err := movieRepository.GetAllMovies()
+	movies, _, err := movieRepository.GetAllMovies()
 	if err != nil {
 		return InternalServerError(err)
 	}
@@ -23,7 +23,7 @@ func GetAllMovies() HandlerResponse {
 
 // Get returns a Movie for a given id
 func GetMovieById(id int) HandlerResponse {
-	movie, err := movieRepository.GetMovieById(id)
+	movie, _, err := movieRepository.GetMovieById(id)
 
 	if err != nil {
 		if gorm.IsRecordNotFoundError(err) {
@@ -43,7 +43,7 @@ func CreateMovie(newMovie *Movie) HandlerResponse {
 	}
 
 	newMovie.Initialize()
-	createdMovie, err := movieRepository.CreateMovie(newMovie)
+	createdMovie, _, err := movieRepository.CreateMovie(newMovie)
 
 	if err != nil {
 		return InternalServerError(err)
@@ -59,7 +59,7 @@ func UpdateMovie(id int, movieToUpdate *Movie) HandlerResponse {
 		return UnprocessableEntity(fieldErrors)
 	}
 
-	updatedMovie, err := movieRepository.UpdateMovie(id, movieToUpdate)
+	updatedMovie, _, err := movieRepository.UpdateMovie(id, movieToUpdate)
 
 	if err != nil {
 		if gorm.IsRecordNotFoundError(err) {
@@ -72,7 +72,7 @@ func UpdateMovie(id int, movieToUpdate *Movie) HandlerResponse {
 
 // Delete a movie for a given id
 func DeleteMovieById(id int) HandlerResponse {
-	err := movieRepository.DeleteMovieById(id)
+	_, err := movieRepository.DeleteMovieById(id)
 
 	if err != nil {
 		if gorm.IsRecordNotFoundError(err) {
