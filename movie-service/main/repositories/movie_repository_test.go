@@ -2,6 +2,7 @@ package repositories
 
 import (
 	"database/sql"
+	"errors"
 	"log"
 	"testing"
 
@@ -176,9 +177,54 @@ func TestCreateMovie(t *testing.T) {
 	teardown()
 }
 
-// TODO: implement
 func TestCreateMovieWithInvalidData(t *testing.T) {
 	setup()
+	store := MovieStore{}
+	assert := assert.New(t)
+	insertStatement := "^INSERT INTO \"movies\" \\(\"name\",\"rating\"\\) VALUES \\(\\?,\\?\\)$"
+	duplicatedKeyError := "pq: duplicate key value violates unique constraint \"movies_name_key\""
+
+	movieToCreate := models.Movie{
+		Name:   "Duplicated movie name",
+		Rating: 5,
+	}
+
+	expectedRowsAffected := int64(1)
+	expectedMovie := models.Movie{
+		Id:     1,
+		Name:   "Duplicated movie name",
+		Rating: 5,
+	}
+
+	mock.ExpectBegin()
+	mock.ExpectExec(insertStatement).
+		WithArgs(movieToCreate.Name, movieToCreate.Rating).
+		WillReturnResult(sqlmock.NewResult(1, 1))
+	mock.ExpectCommit()
+
+	createdMovie, rowsAffected, err := store.CreateMovie(&movieToCreate)
+
+	assert.Nil(err)
+	assert.Equal(expectedRowsAffected, rowsAffected)
+	assert.Equal(expectedMovie, createdMovie)
+
+	expectedRowsAffected = int64(0)
+	duplicatedMovieToCreate := models.Movie{
+		Name:   "Duplicated movie name",
+		Rating: 5,
+	}
+
+	mock.ExpectBegin()
+	mock.ExpectExec(insertStatement).
+		WithArgs(duplicatedMovieToCreate.Name, duplicatedMovieToCreate.Rating).
+		WillReturnResult(sqlmock.NewResult(1, 0)).
+		WillReturnError(errors.New(duplicatedKeyError))
+	mock.ExpectCommit()
+
+	_, rowsAffected, err = store.CreateMovie(&duplicatedMovieToCreate)
+
+	assert.Equal(duplicatedKeyError, err.Error())
+	assert.Equal(expectedRowsAffected, rowsAffected)
 	teardown()
 }
 
@@ -209,12 +255,6 @@ func TestUpdateMovie(t *testing.T) {
 	assert.Nil(err)
 	assert.Equal(movieToUpdate, updatedMovie)
 	assert.Equal(expectedRowsAffected, rowsAffected)
-	teardown()
-}
-
-// TODO: implement
-func TestUpdateMovieWithInvalidData(t *testing.T) {
-	setup()
 	teardown()
 }
 
