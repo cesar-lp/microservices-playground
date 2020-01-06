@@ -5,9 +5,11 @@ import (
 	"log"
 	"net/http"
 
-	ctrl "github.com/cesar-lp/microservices-playground/movie-service/main/controllers"
+	"github.com/cesar-lp/microservices-playground/movie-service/main/controllers"
 	db "github.com/cesar-lp/microservices-playground/movie-service/main/database"
+	"github.com/cesar-lp/microservices-playground/movie-service/main/handlers"
 	mw "github.com/cesar-lp/microservices-playground/movie-service/main/middleware"
+	"github.com/cesar-lp/microservices-playground/movie-service/main/repositories"
 	"github.com/gorilla/mux"
 	"github.com/jinzhu/gorm"
 )
@@ -28,11 +30,9 @@ func Configure() Server {
 
 func getRoutes() *mux.Router {
 	r := mux.NewRouter()
-	r.HandleFunc("/api/movies", ctrl.GetAllMovies).Methods("GET")
-	r.HandleFunc("/api/movies", ctrl.CreateMovie).Methods("POST")
-	r.HandleFunc("/api/movies/{id}", ctrl.GetMovieById).Methods("GET")
-	r.HandleFunc("/api/movies/{id}", ctrl.UpdateMovie).Methods("PUT")
-	r.HandleFunc("/api/movies/{id}", ctrl.DeleteMovieById).Methods("DELETE")
+
+	movieHandler := handlers.CreateMovieHandler(repositories.GetMovieRepository())
+	controllers.CreateMovieController(movieHandler, r)
 
 	r.Use(mw.JSONMiddleware)
 	return r

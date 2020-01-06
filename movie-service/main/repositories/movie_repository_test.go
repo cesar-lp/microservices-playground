@@ -16,21 +16,20 @@ import (
 // TODO:
 // remove global variables
 // see if there's a better way to run before & after functions
-// test create & update with invalid values
 
-var db *sql.DB
+var _db *sql.DB
 var _gorm *gorm.DB
 var mock sqlmock.Sqlmock
 
 func setup() {
-	_db, _mock, err := sqlmock.New()
+	db, _mock, err := sqlmock.New()
 
 	if err != nil {
 		log.Fatalf("Error '%s' when opening a stub database connection", err)
 	}
-	db = _db
+	_db = db
 
-	gorm, err := gorm.Open("sqlmock", db)
+	gorm, err := gorm.Open("sqlmock", _db)
 
 	if err != nil {
 		log.Fatal("Could not mock a gorm connection")
@@ -42,13 +41,13 @@ func setup() {
 }
 
 func teardown() {
-	db.Close()
+	_db.Close()
 	_gorm.Close()
 }
 
 func TestGetAllMovies(t *testing.T) {
 	setup()
-	store := MovieStore{}
+	store := GetMovieRepository()
 	assert := assert.New(t)
 	query := "^SELECT (.+) FROM \"movies\" LIMIT 50$"
 
@@ -92,7 +91,7 @@ func TestGetAllMovies(t *testing.T) {
 
 func TestGetMovieById(t *testing.T) {
 	setup()
-	store := MovieStore{}
+	store := GetMovieRepository()
 	assert := assert.New(t)
 	query := "^SELECT (.+) FROM \"movies\" WHERE \\(id = \\?\\) LIMIT 1$"
 
@@ -120,7 +119,7 @@ func TestGetMovieById(t *testing.T) {
 
 func TestGetMovieByNonExistingId(t *testing.T) {
 	setup()
-	store := MovieStore{}
+	store := GetMovieRepository()
 	assert := assert.New(t)
 	query := "^SELECT (.+) FROM \"movies\" WHERE \\(id = \\?\\) LIMIT 1$"
 
@@ -147,7 +146,7 @@ func TestGetMovieByNonExistingId(t *testing.T) {
 
 func TestCreateMovie(t *testing.T) {
 	setup()
-	store := MovieStore{}
+	store := GetMovieRepository()
 	assert := assert.New(t)
 	insertStatement := "^INSERT INTO \"movies\" \\(\"name\",\"rating\"\\) VALUES \\(\\?,\\?\\)$"
 
@@ -179,7 +178,7 @@ func TestCreateMovie(t *testing.T) {
 
 func TestCreateMovieWithInvalidData(t *testing.T) {
 	setup()
-	store := MovieStore{}
+	store := GetMovieRepository()
 	assert := assert.New(t)
 	insertStatement := "^INSERT INTO \"movies\" \\(\"name\",\"rating\"\\) VALUES \\(\\?,\\?\\)$"
 	duplicatedKeyError := "pq: duplicate key value violates unique constraint \"movies_name_key\""
@@ -230,7 +229,7 @@ func TestCreateMovieWithInvalidData(t *testing.T) {
 
 func TestUpdateMovie(t *testing.T) {
 	setup()
-	store := MovieStore{}
+	store := GetMovieRepository()
 	assert := assert.New(t)
 	updateStatement := "^UPDATE \"movies\" " +
 		"SET \"id\" = \\?, \"name\" = \\?, \"rating\" = \\? " +
@@ -260,7 +259,7 @@ func TestUpdateMovie(t *testing.T) {
 
 func TestDeleteMovieById(t *testing.T) {
 	setup()
-	store := MovieStore{}
+	store := GetMovieRepository()
 	assert := assert.New(t)
 	deleteStatement := "^DELETE FROM \"movies\" WHERE \"movies\"\\.\"id\" = \\?$"
 
@@ -281,7 +280,7 @@ func TestDeleteMovieById(t *testing.T) {
 
 func TestDeleteMovieByNonExistingId(t *testing.T) {
 	setup()
-	store := MovieStore{}
+	store := GetMovieRepository()
 	assert := assert.New(t)
 	deleteStatement := "^DELETE FROM \"movies\" WHERE \"movies\"\\.\"id\" = \\?$"
 

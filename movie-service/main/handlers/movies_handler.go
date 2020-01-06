@@ -10,11 +10,27 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
-var movieRepository = repositories.MovieStore{}
+type MovieHandlerAPI interface {
+	GetAllMovies() HandlerResponse
+	GetMovieById(id int) HandlerResponse
+	CreateMovie(newMovie *Movie) HandlerResponse
+	UpdateMovie(id int, movieToUpdate *Movie) HandlerResponse
+	DeleteMovieById(id int) HandlerResponse
+}
+
+type movieHandler struct {
+	repository repositories.MovieRepository
+}
+
+func CreateMovieHandler(movieRepository repositories.MovieRepository) MovieHandlerAPI {
+	return &movieHandler{
+		repository: movieRepository,
+	}
+}
 
 // GetAll returns all movies
-func GetAllMovies() HandlerResponse {
-	movies, _, err := movieRepository.GetAllMovies()
+func (h *movieHandler) GetAllMovies() HandlerResponse {
+	movies, _, err := h.repository.GetAllMovies()
 	if err != nil {
 		return InternalServerError(err)
 	}
@@ -22,8 +38,8 @@ func GetAllMovies() HandlerResponse {
 }
 
 // Get returns a Movie for a given id
-func GetMovieById(id int) HandlerResponse {
-	movie, _, err := movieRepository.GetMovieById(id)
+func (h *movieHandler) GetMovieById(id int) HandlerResponse {
+	movie, _, err := h.repository.GetMovieById(id)
 
 	if err != nil {
 		if gorm.IsRecordNotFoundError(err) {
@@ -35,7 +51,7 @@ func GetMovieById(id int) HandlerResponse {
 }
 
 // Save a movie
-func CreateMovie(newMovie *Movie) HandlerResponse {
+func (h *movieHandler) CreateMovie(newMovie *Movie) HandlerResponse {
 	fieldErrors := newMovie.Validate()
 
 	if len(fieldErrors) > 0 {
@@ -43,7 +59,7 @@ func CreateMovie(newMovie *Movie) HandlerResponse {
 	}
 
 	newMovie.Initialize()
-	createdMovie, _, err := movieRepository.CreateMovie(newMovie)
+	createdMovie, _, err := h.repository.CreateMovie(newMovie)
 
 	if err != nil {
 		return InternalServerError(err)
@@ -52,14 +68,14 @@ func CreateMovie(newMovie *Movie) HandlerResponse {
 }
 
 // Update a movie
-func UpdateMovie(id int, movieToUpdate *Movie) HandlerResponse {
+func (h *movieHandler) UpdateMovie(id int, movieToUpdate *Movie) HandlerResponse {
 	fieldErrors := movieToUpdate.Validate()
 
 	if len(fieldErrors) > 0 {
 		return UnprocessableEntity(fieldErrors)
 	}
 
-	updatedMovie, _, err := movieRepository.UpdateMovie(id, movieToUpdate)
+	updatedMovie, _, err := h.repository.UpdateMovie(id, movieToUpdate)
 
 	if err != nil {
 		if gorm.IsRecordNotFoundError(err) {
@@ -71,8 +87,8 @@ func UpdateMovie(id int, movieToUpdate *Movie) HandlerResponse {
 }
 
 // Delete a movie for a given id
-func DeleteMovieById(id int) HandlerResponse {
-	_, err := movieRepository.DeleteMovieById(id)
+func (h *movieHandler) DeleteMovieById(id int) HandlerResponse {
+	_, err := h.repository.DeleteMovieById(id)
 
 	if err != nil {
 		if gorm.IsRecordNotFoundError(err) {

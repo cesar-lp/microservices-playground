@@ -14,19 +14,24 @@ type MovieRepository interface {
 	DeleteMovieById(id int) (int64, error)
 }
 
-type MovieStore struct{}
+type movieStore struct{}
+
+func GetMovieRepository() MovieRepository {
+	return &movieStore{}
+}
 
 func getDB() *gorm.DB {
 	return database.Get().Debug().Model(&models.Movie{})
 }
 
-func (MovieStore) GetAllMovies() ([]models.Movie, int64, error) {
+func (movieStore) GetAllMovies() ([]models.Movie, int64, error) {
 	movies := []models.Movie{}
 	db := getDB().Limit(50).Find(&movies)
 	return movies, db.RowsAffected, db.Error
 }
 
-func (MovieStore) GetMovieById(id int) (models.Movie, int64, error) {
+// TODO db.First(&user, 10)
+func (movieStore) GetMovieById(id int) (models.Movie, int64, error) {
 	var movie models.Movie
 	db := getDB().Where("id = ?", id).Take(&movie)
 
@@ -36,12 +41,12 @@ func (MovieStore) GetMovieById(id int) (models.Movie, int64, error) {
 	return movie, db.RowsAffected, db.Error
 }
 
-func (MovieStore) CreateMovie(movie *models.Movie) (models.Movie, int64, error) {
+func (movieStore) CreateMovie(movie *models.Movie) (models.Movie, int64, error) {
 	db := getDB().Create(&movie)
 	return *movie, db.RowsAffected, db.Error
 }
 
-func (store MovieStore) UpdateMovie(id int, movieToUpdate *models.Movie) (models.Movie, int64, error) {
+func (store movieStore) UpdateMovie(id int, movieToUpdate *models.Movie) (models.Movie, int64, error) {
 	db := getDB().Where("id = ?", id).Update(&movieToUpdate)
 
 	if db.RowsAffected == int64(0) {
@@ -50,7 +55,7 @@ func (store MovieStore) UpdateMovie(id int, movieToUpdate *models.Movie) (models
 	return *movieToUpdate, db.RowsAffected, db.Error
 }
 
-func (store MovieStore) DeleteMovieById(id int) (int64, error) {
+func (store movieStore) DeleteMovieById(id int) (int64, error) {
 	movie := models.Movie{Id: id}
 	db := getDB().Delete(&movie)
 
