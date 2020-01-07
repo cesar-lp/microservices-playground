@@ -1,4 +1,4 @@
-package repositories
+package repositories_tests
 
 import (
 	"database/sql"
@@ -9,6 +9,7 @@ import (
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/cesar-lp/microservices-playground/movie-service/main/database"
 	"github.com/cesar-lp/microservices-playground/movie-service/main/models"
+	. "github.com/cesar-lp/microservices-playground/movie-service/main/repositories"
 	"github.com/jinzhu/gorm"
 	"github.com/stretchr/testify/assert"
 )
@@ -41,6 +42,10 @@ func setup() {
 }
 
 func teardown() {
+	if err := mock.ExpectationsWereMet(); err != nil {
+		log.Fatalf("there were unfulfilled expectations: %s", err)
+	}
+
 	_db.Close()
 	_gorm.Close()
 }
@@ -117,7 +122,7 @@ func TestGetMovieById(t *testing.T) {
 	teardown()
 }
 
-func TestGetMovieByNonExistingId(t *testing.T) {
+func TestGetMovieById_ReturnsRecordNotFoundError(t *testing.T) {
 	setup()
 	store := GetMovieRepository()
 	assert := assert.New(t)
@@ -176,7 +181,7 @@ func TestCreateMovie(t *testing.T) {
 	teardown()
 }
 
-func TestCreateMovieWithInvalidData(t *testing.T) {
+func TestCreateMovie_ReturnsDuplicatedKeyError(t *testing.T) {
 	setup()
 	store := GetMovieRepository()
 	assert := assert.New(t)
@@ -218,12 +223,13 @@ func TestCreateMovieWithInvalidData(t *testing.T) {
 		WithArgs(duplicatedMovieToCreate.Name, duplicatedMovieToCreate.Rating).
 		WillReturnResult(sqlmock.NewResult(1, 0)).
 		WillReturnError(errors.New(duplicatedKeyError))
-	mock.ExpectCommit()
+	mock.ExpectRollback()
 
 	_, rowsAffected, err = store.CreateMovie(&duplicatedMovieToCreate)
 
 	assert.Equal(duplicatedKeyError, err.Error())
 	assert.Equal(expectedRowsAffected, rowsAffected)
+
 	teardown()
 }
 
@@ -278,7 +284,7 @@ func TestDeleteMovieById(t *testing.T) {
 	teardown()
 }
 
-func TestDeleteMovieByNonExistingId(t *testing.T) {
+func TestDeleteMovieById_ReturnsRecordNotFound(t *testing.T) {
 	setup()
 	store := GetMovieRepository()
 	assert := assert.New(t)
