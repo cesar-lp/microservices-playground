@@ -1,5 +1,8 @@
 package common
 
+// TODO:
+// warning, NotFound could be used instead of ResourceNotFound
+
 // HandlerResponse structure
 type HandlerResponse struct {
 	StatusCode  int

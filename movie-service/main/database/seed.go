@@ -3,7 +3,6 @@ package database
 import (
 	"log"
 
-	_ "github.com/cesar-lp/microservices-playground/movie-service/main/middleware"
 	"github.com/cesar-lp/microservices-playground/movie-service/main/models"
 )
 

@@ -8,7 +8,7 @@ import (
 	"github.com/cesar-lp/microservices-playground/movie-service/main/controllers"
 	db "github.com/cesar-lp/microservices-playground/movie-service/main/database"
 	"github.com/cesar-lp/microservices-playground/movie-service/main/handlers"
-	mw "github.com/cesar-lp/microservices-playground/movie-service/main/middleware"
+	mw "github.com/cesar-lp/microservices-playground/movie-service/main/middlewares"
 	"github.com/cesar-lp/microservices-playground/movie-service/main/repositories"
 	"github.com/gorilla/mux"
 	"github.com/jinzhu/gorm"

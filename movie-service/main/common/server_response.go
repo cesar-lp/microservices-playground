@@ -6,14 +6,14 @@ import (
 	"time"
 )
 
-type baseResponse struct {
+type BaseErrorResponse struct {
 	Error     string    `json:"error"`
 	Message   string    `json:"message"`
 	Path      string    `json:"path"`
 	Timestamp time.Time `json:"timestamp"`
 }
 
-type validationResponse struct {
+type ValidationErrorResponse struct {
 	Message     string       `json:"message"`
 	FieldErrors []FieldError `json:"fieldErrors"`
 	Path        string       `json:"path"`
@@ -21,6 +21,7 @@ type validationResponse struct {
 }
 
 // FieldError structure
+// TODO: should be related to handler_response (server_response can depend on it but not the other way)
 type FieldError struct {
 	FieldName    string `json:"fieldName"`
 	Error        string `json:"error"`
@@ -32,13 +33,13 @@ func ServerResponse(w http.ResponseWriter, r *http.Request, hr HandlerResponse) 
 	switch hr.StatusCode {
 	case 500:
 		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(internalServerError(r.RequestURI, hr.Err.Error()))
+		json.NewEncoder(w).Encode(internalServerError(r.URL.Path, hr.Err.Error()))
 	case 422:
 		w.WriteHeader(http.StatusUnprocessableEntity)
-		json.NewEncoder(w).Encode(validationError(r.RequestURI, hr.FieldErrors))
+		json.NewEncoder(w).Encode(ValidationError(r.URL.Path, hr.FieldErrors))
 	case 404:
 		w.WriteHeader(http.StatusNotFound)
-		json.NewEncoder(w).Encode(resourceNotFound(r.RequestURI, hr.Err.Error()))
+		json.NewEncoder(w).Encode(ResourceNotFound(r.URL.Path, hr.Err.Error()))
 	case 204:
 		w.WriteHeader(http.StatusNoContent)
 	case 201:
@@ -50,8 +51,8 @@ func ServerResponse(w http.ResponseWriter, r *http.Request, hr HandlerResponse) 
 	}
 }
 
-func internalServerError(path string, message string) baseResponse {
-	return baseResponse{
+func internalServerError(path string, message string) BaseErrorResponse {
+	return BaseErrorResponse{
 		Error:     "Internal Server Error",
 		Message:   message,
 		Path:      path,
@@ -59,8 +60,8 @@ func internalServerError(path string, message string) baseResponse {
 	}
 }
 
-func validationError(path string, fieldErrors []FieldError) validationResponse {
-	return validationResponse{
+func ValidationError(path string, fieldErrors []FieldError) ValidationErrorResponse {
+	return ValidationErrorResponse{
 		Message:     "Validation Failed",
 		FieldErrors: fieldErrors,
 		Path:        path,
@@ -68,8 +69,8 @@ func validationError(path string, fieldErrors []FieldError) validationResponse {
 	}
 }
 
-func resourceNotFound(path string, message string) baseResponse {
-	return baseResponse{
+func ResourceNotFound(path string, message string) BaseErrorResponse {
+	return BaseErrorResponse{
 		Error:     "Resource Not Found",
 		Message:   message,
 		Path:      path,
