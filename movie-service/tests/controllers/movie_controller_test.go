@@ -7,12 +7,13 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	. "github.com/cesar-lp/microservices-playground/movie-service/main/common"
-	"github.com/cesar-lp/microservices-playground/movie-service/main/controllers"
-	. "github.com/cesar-lp/microservices-playground/movie-service/main/handlers/mocks"
+	"github.com/cesar-lp/microservices-playground/movie-service/main/common"
+	ctrl "github.com/cesar-lp/microservices-playground/movie-service/main/controllers"
 	"github.com/cesar-lp/microservices-playground/movie-service/main/middlewares"
 	"github.com/cesar-lp/microservices-playground/movie-service/main/models"
-	"github.com/cesar-lp/microservices-playground/movie-service/main/utils"
+	mocks "github.com/cesar-lp/microservices-playground/movie-service/tests/handlers/mocks"
+	"github.com/cesar-lp/microservices-playground/movie-service/tests/utils"
+
 	"github.com/gorilla/mux"
 	"github.com/stretchr/testify/assert"
 )
@@ -20,7 +21,7 @@ import (
 func setupController(isRepositoryEmpty bool) *mux.Router {
 	r := mux.NewRouter()
 	r.Use(middlewares.JSONMiddleware)
-	controllers.CreateMovieController(MovieHandlerMock(isRepositoryEmpty), r)
+	ctrl.MovieController(mocks.MovieHandlerMock(isRepositoryEmpty), r)
 	return r
 }
 
@@ -80,9 +81,9 @@ func TestGetMovieById_ReturnsResourceNotFoundError(t *testing.T) {
 	assert := assert.New(t)
 	rr := setupTest(setupController(true), "GET", path, nil)
 
-	expectedResponseBody := ResourceNotFound(path, "Movie not found for id 1")
+	expectedResponseBody := ctrl.ResourceNotFound(path, "Movie not found for id 1")
 
-	var responseBody BaseErrorResponse
+	var responseBody ctrl.BaseErrorResponse
 	json.NewDecoder(rr.Body).Decode(&responseBody)
 	responseBody.Timestamp = expectedResponseBody.Timestamp
 
@@ -109,11 +110,11 @@ func TestCreateMovie_ReturnsInvalidFieldsError(t *testing.T) {
 	assert := assert.New(t)
 	rr := setupTest(setupController(false), "POST", path, utils.WriteBody(models.Movie{}))
 
-	expectedResponseBody := ValidationError(path, []FieldError{
-		FieldError{FieldName: "name", Error: "Name is required", InvalidValue: ""},
+	expectedResponseBody := ctrl.ValidationError(path, []common.FieldError{
+		common.NewFieldError("name", "Name is required", ""),
 	})
 
-	var responseBody ValidationErrorResponse
+	var responseBody ctrl.ValidationErrorResponse
 	json.NewDecoder(rr.Body).Decode(&responseBody)
 	responseBody.Timestamp = expectedResponseBody.Timestamp
 
@@ -142,9 +143,9 @@ func TestUpdateMovie_ReturnsResourceNotFoundError(t *testing.T) {
 	updatedMovie := models.Movie{Id: 1, Name: "Inception", Rating: 5}
 	rr := setupTest(setupController(true), "PUT", path, utils.WriteBody(updatedMovie))
 
-	expectedResponseBody := ResourceNotFound(path, "Movie not found for id 1")
+	expectedResponseBody := ctrl.ResourceNotFound(path, "Movie not found for id 1")
 
-	var responseBody BaseErrorResponse
+	var responseBody ctrl.BaseErrorResponse
 	json.NewDecoder(rr.Body).Decode(&responseBody)
 	responseBody.Timestamp = expectedResponseBody.Timestamp
 
@@ -165,9 +166,9 @@ func TestDeleteMovieById_ReturnsResourceNotFoundError(t *testing.T) {
 	assert := assert.New(t)
 	rr := setupTest(setupController(true), "DELETE", path, nil)
 
-	expectedResponseBody := ResourceNotFound(path, "Movie not found for id 1")
+	expectedResponseBody := ctrl.ResourceNotFound(path, "Movie not found for id 1")
 
-	var responseBody BaseErrorResponse
+	var responseBody ctrl.BaseErrorResponse
 	json.NewDecoder(rr.Body).Decode(&responseBody)
 	responseBody.Timestamp = expectedResponseBody.Timestamp
 

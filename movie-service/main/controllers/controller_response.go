@@ -1,9 +1,12 @@
-package common
+package controllers
 
 import (
 	"encoding/json"
 	"net/http"
 	"time"
+
+	"github.com/cesar-lp/microservices-playground/movie-service/main/common"
+	"github.com/cesar-lp/microservices-playground/movie-service/main/handlers"
 )
 
 type BaseErrorResponse struct {
@@ -14,22 +17,14 @@ type BaseErrorResponse struct {
 }
 
 type ValidationErrorResponse struct {
-	Message     string       `json:"message"`
-	FieldErrors []FieldError `json:"fieldErrors"`
-	Path        string       `json:"path"`
-	Timestamp   time.Time    `json:"timestamp"`
-}
-
-// FieldError structure
-// TODO: should be related to handler_response (server_response can depend on it but not the other way)
-type FieldError struct {
-	FieldName    string `json:"fieldName"`
-	Error        string `json:"error"`
-	InvalidValue string `json:"invalidValue"`
+	Message     string              `json:"message"`
+	FieldErrors []common.FieldError `json:"fieldErrors"`
+	Path        string              `json:"path"`
+	Timestamp   time.Time           `json:"timestamp"`
 }
 
 // ServerResponse builds a HTTP response based on a handler response
-func ServerResponse(w http.ResponseWriter, r *http.Request, hr HandlerResponse) {
+func ServerResponse(w http.ResponseWriter, r *http.Request, hr handlers.HandlerResponse) {
 	switch hr.StatusCode {
 	case 500:
 		w.WriteHeader(http.StatusInternalServerError)
@@ -51,16 +46,7 @@ func ServerResponse(w http.ResponseWriter, r *http.Request, hr HandlerResponse) 
 	}
 }
 
-func internalServerError(path string, message string) BaseErrorResponse {
-	return BaseErrorResponse{
-		Error:     "Internal Server Error",
-		Message:   message,
-		Path:      path,
-		Timestamp: time.Now(),
-	}
-}
-
-func ValidationError(path string, fieldErrors []FieldError) ValidationErrorResponse {
+func ValidationError(path string, fieldErrors []common.FieldError) ValidationErrorResponse {
 	return ValidationErrorResponse{
 		Message:     "Validation Failed",
 		FieldErrors: fieldErrors,
@@ -72,6 +58,15 @@ func ValidationError(path string, fieldErrors []FieldError) ValidationErrorRespo
 func ResourceNotFound(path string, message string) BaseErrorResponse {
 	return BaseErrorResponse{
 		Error:     "Resource Not Found",
+		Message:   message,
+		Path:      path,
+		Timestamp: time.Now(),
+	}
+}
+
+func internalServerError(path string, message string) BaseErrorResponse {
+	return BaseErrorResponse{
+		Error:     "Internal Server Error",
 		Message:   message,
 		Path:      path,
 		Timestamp: time.Now(),

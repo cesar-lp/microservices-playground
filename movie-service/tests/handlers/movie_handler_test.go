@@ -4,19 +4,20 @@ import (
 	"strconv"
 	"testing"
 
-	. "github.com/cesar-lp/microservices-playground/movie-service/main/common"
+	"github.com/cesar-lp/microservices-playground/movie-service/main/common"
 	"github.com/cesar-lp/microservices-playground/movie-service/main/handlers"
 	"github.com/cesar-lp/microservices-playground/movie-service/main/models"
-	. "github.com/cesar-lp/microservices-playground/movie-service/main/repositories/mocks"
+	mocks "github.com/cesar-lp/microservices-playground/movie-service/tests/repositories/mocks"
+
 	"github.com/stretchr/testify/assert"
 )
 
-func setupTest(t *testing.T) (*assert.Assertions, handlers.MovieHandlerAPI) {
-	return assert.New(t), handlers.CreateMovieHandler(GetMovieStoreMock())
+func setupTest(t *testing.T, hasEmptyRepository bool) (*assert.Assertions, handlers.MovieHandler) {
+	return assert.New(t), handlers.MovieHandlerImpl(mocks.MovieRepositoryMock(hasEmptyRepository))
 }
 
 func TestGetAllMovies(t *testing.T) {
-	assert, handler := setupTest(t)
+	assert, handler := setupTest(t, false)
 
 	expectedMovies := []models.Movie{
 		models.Movie{Id: 1, Name: "Inception", Rating: 5},
@@ -26,10 +27,23 @@ func TestGetAllMovies(t *testing.T) {
 	assert.Nil(hr.Err)
 	assert.Nil(hr.FieldErrors)
 	assert.Equal(expectedMovies, hr.Payload)
+
+	assert, handler = setupTest(t, true)
+}
+
+func TestGetAllMovies_ReturnsEmpty(t *testing.T) {
+	assert, handler := setupTest(t, true)
+
+	var expectedMovies []models.Movie
+
+	hr := handler.GetAllMovies()
+	assert.Nil(hr.Err)
+	assert.Nil(hr.FieldErrors)
+	assert.Equal(expectedMovies, hr.Payload)
 }
 
 func TestGetMovieById(t *testing.T) {
-	assert, handler := setupTest(t)
+	assert, handler := setupTest(t, false)
 
 	id := 1
 	expectedMovie := models.Movie{Id: id, Name: "Inception", Rating: 5}
@@ -43,12 +57,12 @@ func TestGetMovieById(t *testing.T) {
 
 func TestGetMovieById_ReturnsResourceNotFoundError(t *testing.T) {
 	id := -1
-	assert, handler := setupTest(t)
+	assert, handler := setupTest(t, true)
 	assertHandlerReturnsResourceNotFoundError(assert, handler.GetMovieById(id), id)
 }
 
 func TestCreateMovie(t *testing.T) {
-	assert, handler := setupTest(t)
+	assert, handler := setupTest(t, false)
 
 	movieToCreate := models.Movie{Name: "Inception", Rating: 5}
 	expectedMovieCreated := models.Movie{Id: 1, Name: "Inception", Rating: 5}
@@ -61,11 +75,11 @@ func TestCreateMovie(t *testing.T) {
 }
 
 func TestCreateMovie_ReturnsInvalidFieldsError(t *testing.T) {
-	assert, handler := setupTest(t)
+	assert, handler := setupTest(t, false)
 
 	movieToCreate := models.Movie{}
-	expectedFieldErrors := []FieldError{
-		FieldError{FieldName: "name", Error: "Name is required", InvalidValue: ""},
+	expectedFieldErrors := []common.FieldError{
+		common.NewFieldError("name", "Name is required", ""),
 	}
 
 	hr := handler.CreateMovie(&movieToCreate)
@@ -76,7 +90,7 @@ func TestCreateMovie_ReturnsInvalidFieldsError(t *testing.T) {
 }
 
 func TestUpdateMovie(t *testing.T) {
-	assert, handler := setupTest(t)
+	assert, handler := setupTest(t, false)
 
 	id := 1
 	movieToUpdate := models.Movie{Id: 1, Name: "Inception", Rating: 5}
@@ -89,7 +103,7 @@ func TestUpdateMovie(t *testing.T) {
 }
 
 func TestUpdateMovie_ReturnsResourceNotFoundError(t *testing.T) {
-	assert, handler := setupTest(t)
+	assert, handler := setupTest(t, true)
 
 	id := -1
 	movieToUpdate := models.Movie{Id: 1, Name: "Inception", Rating: 5}
@@ -98,7 +112,7 @@ func TestUpdateMovie_ReturnsResourceNotFoundError(t *testing.T) {
 }
 
 func TestDeleteMovieById(t *testing.T) {
-	assert, handler := setupTest(t)
+	assert, handler := setupTest(t, false)
 
 	id := 1
 
@@ -111,11 +125,11 @@ func TestDeleteMovieById(t *testing.T) {
 
 func TestDeleteMovieById_ReturnsResourceNotFoundError(t *testing.T) {
 	id := -1
-	assert, handler := setupTest(t)
+	assert, handler := setupTest(t, true)
 	assertHandlerReturnsResourceNotFoundError(assert, handler.DeleteMovieById(id), id)
 }
 
-func assertHandlerReturnsResourceNotFoundError(assert *assert.Assertions, hr HandlerResponse, id int) {
+func assertHandlerReturnsResourceNotFoundError(assert *assert.Assertions, hr handlers.HandlerResponse, id int) {
 	assert.Nil(hr.Payload)
 	assert.Nil(hr.FieldErrors)
 	assert.Equal(404, hr.StatusCode)

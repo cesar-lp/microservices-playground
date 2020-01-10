@@ -1,14 +1,13 @@
-package common
+package handlers
 
-// TODO:
-// warning, NotFound could be used instead of ResourceNotFound
+import "github.com/cesar-lp/microservices-playground/movie-service/main/common"
 
 // HandlerResponse structure
 type HandlerResponse struct {
 	StatusCode  int
 	Payload     interface{}
 	Err         error
-	FieldErrors []FieldError
+	FieldErrors []common.FieldError
 }
 
 // Ok builds and returns a response for a successful operation
@@ -42,7 +41,7 @@ func NotFound(err error) HandlerResponse {
 	}
 }
 
-func UnprocessableEntity(fieldErrors []FieldError) HandlerResponse {
+func UnprocessableEntity(fieldErrors []common.FieldError) HandlerResponse {
 	return HandlerResponse{
 		StatusCode:  422,
 		FieldErrors: fieldErrors,
