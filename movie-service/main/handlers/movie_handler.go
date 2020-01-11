@@ -12,10 +12,24 @@ import (
 
 // MovieHandler contract.
 type MovieHandler interface {
+	// GetAllMovies returns a handler response containing all found movies
+	// and any additional information.
 	GetAllMovies() HandlerResponse
+
+	// GetMovieById returns a handler response containing the movie found for a given id
+	// and any additional information.
 	GetMovieById(id int) HandlerResponse
+
+	// CreateMovie creates a movie and returns a handler response containing the created movie
+	// and any additional information.
 	CreateMovie(newMovie *models.Movie) HandlerResponse
+
+	// UpdateMovie updates a movie and returns a handler response containing the updated movie
+	// and any additional information.
 	UpdateMovie(id int, movieToUpdate *models.Movie) HandlerResponse
+
+	// DeleteMovieById deletes a movie for a given id and returns a handler response containing
+	// the results of the operation.
 	DeleteMovieById(id int) HandlerResponse
 }
 
@@ -30,8 +44,6 @@ func MovieHandlerImpl(r repositories.MovieRepository) MovieHandler {
 	}
 }
 
-// GetAllMovies returns a handler response containing all found movies
-// and any additional information.
 func (h movieHandler) GetAllMovies() HandlerResponse {
 	movies, _, err := h.repository.GetAllMovies()
 	if err != nil {
@@ -40,8 +52,6 @@ func (h movieHandler) GetAllMovies() HandlerResponse {
 	return Ok(movies)
 }
 
-// GetMovieById returns a handler response containing the movie found for a given id
-// and any additional information.
 func (h movieHandler) GetMovieById(id int) HandlerResponse {
 	movie, _, err := h.repository.GetMovieById(id)
 
@@ -54,8 +64,6 @@ func (h movieHandler) GetMovieById(id int) HandlerResponse {
 	return Ok(movie)
 }
 
-// CreateMovie creates a movie and returns a handler response containing the created movie
-// and any additional information.
 func (h movieHandler) CreateMovie(newMovie *models.Movie) HandlerResponse {
 	fieldErrors := newMovie.Validate()
 
@@ -72,8 +80,6 @@ func (h movieHandler) CreateMovie(newMovie *models.Movie) HandlerResponse {
 	return Created(createdMovie)
 }
 
-// UpdateMovie updates a movie and returns a handler response containing the updated movie
-// and any additional information.
 func (h movieHandler) UpdateMovie(id int, movieToUpdate *models.Movie) HandlerResponse {
 	fieldErrors := movieToUpdate.Validate()
 
@@ -92,8 +98,6 @@ func (h movieHandler) UpdateMovie(id int, movieToUpdate *models.Movie) HandlerRe
 	return Ok(updatedMovie)
 }
 
-// DeleteMovieById deletes a movie for a given id and returns a handler response containing
-// the results of the operation.
 func (h movieHandler) DeleteMovieById(id int) HandlerResponse {
 	_, err := h.repository.DeleteMovieById(id)
 

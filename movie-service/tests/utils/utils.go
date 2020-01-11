@@ -12,6 +12,7 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
+// DBConnectionMock structure.
 type DBConnectionMock struct {
 	db   *sql.DB
 	Gorm *gorm.DB
