@@ -15,6 +15,7 @@ type movieController struct {
 	handler handlers.MovieHandler
 }
 
+// MovieController instantiates a movie controller.
 func MovieController(h handlers.MovieHandler, r *mux.Router) {
 	ctrl := movieController{
 		handler: h,
@@ -27,19 +28,19 @@ func MovieController(h handlers.MovieHandler, r *mux.Router) {
 	r.HandleFunc("/api/movies/{id}", ctrl.DeleteMovieById).Methods("DELETE")
 }
 
-// GetMovies returns all available movies
+// GetMovies returns all movies.
 func (ctrl movieController) GetAllMovies(w http.ResponseWriter, r *http.Request) {
 	ServerResponse(w, r, ctrl.handler.GetAllMovies())
 }
 
-// GetMovieByID returns a Movie for a given id
+// GetMovieById returns a movie for a given id.
 func (ctrl movieController) GetMovieById(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	id, _ := strconv.Atoi(params["id"])
 	ServerResponse(w, r, ctrl.handler.GetMovieById(id))
 }
 
-// CreateMovie creates and returns the created movie
+// CreateMovie creates and returns the created movie.
 func (ctrl movieController) CreateMovie(w http.ResponseWriter, r *http.Request) {
 	var movie models.Movie
 	json.NewDecoder(r.Body).Decode(&movie)
@@ -49,7 +50,7 @@ func (ctrl movieController) CreateMovie(w http.ResponseWriter, r *http.Request) 
 	ServerResponse(w, r, hr)
 }
 
-// UpdateMovie updates a movie
+// UpdateMovie updates a movie.
 func (ctrl movieController) UpdateMovie(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	id, _ := strconv.Atoi(params["id"])
@@ -59,7 +60,7 @@ func (ctrl movieController) UpdateMovie(w http.ResponseWriter, r *http.Request) 
 	ServerResponse(w, r, ctrl.handler.UpdateMovie(id, &updatedMovie))
 }
 
-// DeleteMovie deletes a movie for a given ID
+// DeleteMovieById deletes a movie for a given id.
 func (ctrl movieController) DeleteMovieById(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	id, _ := strconv.Atoi(params["id"])

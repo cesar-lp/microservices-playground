@@ -9,6 +9,7 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
+// Database structure.
 type Database struct {
 	instance *gorm.DB
 	host     string
@@ -31,6 +32,7 @@ func setupDB(host string, port int, user, password, name string, log bool) Datab
 	}
 }
 
+// Connect establishes a connection to a database using the provided values.
 func (db *Database) Connect() {
 	var err error
 
@@ -53,6 +55,7 @@ func (db *Database) Connect() {
 	fmt.Println("Connected to database")
 }
 
+// LoadSeeds migrates and loads into database existing models.
 func (db *Database) LoadSeeds() {
 	err := db.instance.Debug().DropTableIfExists(&models.Movie{}).Error
 

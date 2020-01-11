@@ -9,6 +9,7 @@ import (
 	"github.com/cesar-lp/microservices-playground/movie-service/main/handlers"
 )
 
+// BaseErrorResponse structure.
 type BaseErrorResponse struct {
 	Error     string    `json:"error"`
 	Message   string    `json:"message"`
@@ -16,6 +17,7 @@ type BaseErrorResponse struct {
 	Timestamp time.Time `json:"timestamp"`
 }
 
+// ValidationErrorResponse structure.
 type ValidationErrorResponse struct {
 	Message     string              `json:"message"`
 	FieldErrors []common.FieldError `json:"fieldErrors"`
@@ -23,7 +25,7 @@ type ValidationErrorResponse struct {
 	Timestamp   time.Time           `json:"timestamp"`
 }
 
-// ServerResponse builds a HTTP response based on a handler response
+// ServerResponse builds a HTTP response based on a handler response.
 func ServerResponse(w http.ResponseWriter, r *http.Request, hr handlers.HandlerResponse) {
 	switch hr.StatusCode {
 	case 500:
@@ -46,6 +48,7 @@ func ServerResponse(w http.ResponseWriter, r *http.Request, hr handlers.HandlerR
 	}
 }
 
+// ValidationError builds and returns a server response object for a validation error.
 func ValidationError(path string, fieldErrors []common.FieldError) ValidationErrorResponse {
 	return ValidationErrorResponse{
 		Message:     "Validation Failed",
@@ -55,6 +58,7 @@ func ValidationError(path string, fieldErrors []common.FieldError) ValidationErr
 	}
 }
 
+// ResourceNotFound builds and returns a server response object for a resource not found error.
 func ResourceNotFound(path string, message string) BaseErrorResponse {
 	return BaseErrorResponse{
 		Error:     "Resource Not Found",

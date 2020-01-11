@@ -10,6 +10,7 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
+// MovieHandler contract.
 type MovieHandler interface {
 	GetAllMovies() HandlerResponse
 	GetMovieById(id int) HandlerResponse
@@ -22,13 +23,15 @@ type movieHandler struct {
 	repository repositories.MovieRepository
 }
 
+// MovieHandlerImpl builds and returns a movie handler implementation.
 func MovieHandlerImpl(r repositories.MovieRepository) MovieHandler {
 	return &movieHandler{
 		repository: r,
 	}
 }
 
-// GetAll returns all movies
+// GetAllMovies returns a handler response containing all found movies
+// and any additional information.
 func (h movieHandler) GetAllMovies() HandlerResponse {
 	movies, _, err := h.repository.GetAllMovies()
 	if err != nil {
@@ -37,7 +40,8 @@ func (h movieHandler) GetAllMovies() HandlerResponse {
 	return Ok(movies)
 }
 
-// Get returns a Movie for a given id
+// GetMovieById returns a handler response containing the movie found for a given id
+// and any additional information.
 func (h movieHandler) GetMovieById(id int) HandlerResponse {
 	movie, _, err := h.repository.GetMovieById(id)
 
@@ -50,7 +54,8 @@ func (h movieHandler) GetMovieById(id int) HandlerResponse {
 	return Ok(movie)
 }
 
-// Save a movie
+// CreateMovie creates a movie and returns a handler response containing the created movie
+// and any additional information.
 func (h movieHandler) CreateMovie(newMovie *models.Movie) HandlerResponse {
 	fieldErrors := newMovie.Validate()
 
@@ -67,7 +72,8 @@ func (h movieHandler) CreateMovie(newMovie *models.Movie) HandlerResponse {
 	return Created(createdMovie)
 }
 
-// Update a movie
+// UpdateMovie updates a movie and returns a handler response containing the updated movie
+// and any additional information.
 func (h movieHandler) UpdateMovie(id int, movieToUpdate *models.Movie) HandlerResponse {
 	fieldErrors := movieToUpdate.Validate()
 
@@ -86,7 +92,8 @@ func (h movieHandler) UpdateMovie(id int, movieToUpdate *models.Movie) HandlerRe
 	return Ok(updatedMovie)
 }
 
-// Delete a movie for a given id
+// DeleteMovieById deletes a movie for a given id and returns a handler response containing
+// the results of the operation.
 func (h movieHandler) DeleteMovieById(id int) HandlerResponse {
 	_, err := h.repository.DeleteMovieById(id)
 

@@ -6,11 +6,24 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
+// MovieRepository contract.
 type MovieRepository interface {
+	// GetAllMovies returns all movies, the number of modified rows and any error encountered.
 	GetAllMovies() ([]models.Movie, int64, error)
+
+	// GetMovieById returns a movie for a given id, the number of modified rows and any error encountered.
 	GetMovieById(id int) (models.Movie, int64, error)
+
+	// CreateMovie saves a movie to database and returns
+	// the created movie, the number of modified rows and any error encountered.
 	CreateMovie(movie *models.Movie) (models.Movie, int64, error)
+
+	// UpdateMovie updates an existing and returns the updated movie, the number of modified rows
+	// and any error encountered.
 	UpdateMovie(id int, movie *models.Movie) (models.Movie, int64, error)
+
+	// DeleteMovieById deletes a movie for a given id and returns the number of modified rows
+	// and any error encountered.
 	DeleteMovieById(id int) (int64, error)
 }
 
@@ -18,6 +31,7 @@ type movieRepository struct {
 	db *gorm.DB
 }
 
+// MovieRepositoryImpl builds and returns a movie repository implementation.
 func MovieRepositoryImpl(database *gorm.DB) MovieRepository {
 	return &movieRepository{
 		db: database.Model(&models.Movie{}),

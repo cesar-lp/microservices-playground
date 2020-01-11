@@ -6,19 +6,19 @@ import (
 	"github.com/cesar-lp/microservices-playground/movie-service/main/common"
 )
 
-// Movie model
+// Movie structure.
 type Movie struct {
 	Id     int    `gorm:"primary_key;auto_increment" json:"id"`
 	Name   string `gorm:"size:255;not null;unique" json:"name"`
 	Rating int    `json:"rating"`
 }
 
-// Initialize the default values
+// Initialize the default values of a given movie.
 func (movie *Movie) Initialize() {
 	movie.Id = 0
 }
 
-// Validate a movie structure
+// Validate a movie structure and returns all the errors encountered.
 func (movie *Movie) Validate() []common.FieldError {
 	fieldErrors := make([]common.FieldError, 0, 2)
 

@@ -13,13 +13,13 @@ import (
 	"github.com/gorilla/mux"
 )
 
-// Server structure
+// Server structure.
 type Server struct {
 	db     Database
 	router *mux.Router
 }
 
-// Configure a server instance
+// Configure a server instance.
 func Configure(host string, port int, user, password, name string, logDB bool) Server {
 	server := Server{
 		db:     setupDB(host, port, user, password, name, logDB),
@@ -29,7 +29,7 @@ func Configure(host string, port int, user, password, name string, logDB bool) S
 	return server
 }
 
-// Run the server
+// Run the server.
 func (server *Server) Run(port string) {
 	server.db.Connect()
 	server.db.LoadSeeds()
