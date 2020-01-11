@@ -1,0 +1,19 @@
+{
+  "dev": {
+    "debug": true
+  },
+  "prod": {
+    "debug": false
+  },
+  "env": "dev",
+  "server": {
+    "address": ":8081"
+  },
+  "db": {
+    "host": "localhost",
+    "port": 5432,
+    "user": "admin",
+    "password": "admin",
+    "name": "movie-service"
+  }
+}

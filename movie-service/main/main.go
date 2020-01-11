@@ -1,30 +1,44 @@
 package main
 
 import (
+	"fmt"
+	"strings"
+
 	"github.com/cesar-lp/microservices-playground/movie-service/main/server"
+	"github.com/spf13/viper"
 
 	_ "github.com/lib/pq"
 )
 
-const (
-	dbHost     = "localhost"
-	dbPort     = 5432
-	dbUser     = "admin"
-	dbPassword = "admin"
-	dbName     = "movie-service"
-)
+func init() {
+	viper.SetConfigFile("../config.json")
+
+	if err := viper.ReadInConfig(); err != nil {
+		panic(err)
+	}
+
+	env := viper.GetString("env")
+	fmt.Println("Service running on " + strings.ToUpper(env))
+}
 
 /*
 	TODO:
-		Logging
-		Retrieve values from environment
-		Minor improvements
 		Migrate to Gin?
-		Cleanup
+		Logging
+		Dockerfile
+		Minor improvements - Cleanup
 */
 func main() {
-	logDB := false
+	env := viper.GetString("env")
+	debug := viper.GetBool(env + ".debug")
+	address := viper.GetString("server.address")
 
-	app := server.Configure(dbHost, dbPort, dbUser, dbPassword, dbName, logDB)
-	app.Run("8081")
+	dbHost := viper.GetString("db.host")
+	dbPort := viper.GetInt("db.port")
+	dbUser := viper.GetString("db.user")
+	dbPassword := viper.GetString("db.password")
+	dbName := viper.GetString("db.name")
+
+	app := server.Configure(dbHost, dbPort, dbUser, dbPassword, dbName, debug)
+	app.Run(address)
 }

@@ -30,13 +30,14 @@ func Configure(host string, port int, user, password, name string, logDB bool) S
 }
 
 // Run the server.
-func (server *Server) Run(port string) {
+func (server *Server) Run(address string) {
 	server.db.Connect()
 	server.db.LoadSeeds()
 	server.initializeDependencies()
+	defer server.db.instance.Close()
 
-	fmt.Println("Server up and running: listening to port " + port)
-	log.Fatal(http.ListenAndServe(":"+port, server.router))
+	fmt.Println("Server up and running: listening to port" + address)
+	log.Fatal(http.ListenAndServe(address, server.router))
 }
 
 func setupRouter() *mux.Router {
