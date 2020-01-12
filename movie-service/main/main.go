@@ -1,32 +1,36 @@
 package main
 
 import (
-	"fmt"
 	"strings"
 
 	"github.com/cesar-lp/microservices-playground/movie-service/main/server"
 	"github.com/spf13/viper"
 
 	_ "github.com/lib/pq"
+	log "github.com/sirupsen/logrus"
 )
 
 func init() {
 	viper.SetConfigFile("../config.json")
 
+	formatter := &log.TextFormatter{
+		FullTimestamp: true,
+	}
+	log.SetFormatter(formatter)
+
 	if err := viper.ReadInConfig(); err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 
 	env := viper.GetString("env")
-	fmt.Println("Service running on " + strings.ToUpper(env))
+	log.Info("Service running on " + strings.ToUpper(env))
 }
 
 /*
 	TODO:
-		Migrate to Gin?
-		Logging
 		Dockerfile
-		Minor improvements - Cleanup
+		Minor improvements (possible bug in update method)
+		Cleanup
 */
 func main() {
 	env := viper.GetString("env")

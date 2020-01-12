@@ -4,6 +4,8 @@ import "github.com/cesar-lp/microservices-playground/movie-service/main/common"
 
 // HandlerResponse structure.
 type HandlerResponse struct {
+	Service     string
+	Function    string
 	StatusCode  int
 	Payload     interface{}
 	Err         error
@@ -34,24 +36,30 @@ func NoContent() HandlerResponse {
 }
 
 // NotFound builds and returns a handler response for a resource not found error.
-func NotFound(err error) HandlerResponse {
+func NotFound(serviceName, functionName string, err error) HandlerResponse {
 	return HandlerResponse{
+		Service:    serviceName,
+		Function:   functionName,
 		StatusCode: 404,
 		Err:        err,
 	}
 }
 
 // UnprocessableEntity builds and returns a handler response for a model with invalid state.
-func UnprocessableEntity(fieldErrors []common.FieldError) HandlerResponse {
+func UnprocessableEntity(serviceName, functionName string, fieldErrors []common.FieldError) HandlerResponse {
 	return HandlerResponse{
+		Service:     serviceName,
+		Function:    functionName,
 		StatusCode:  422,
 		FieldErrors: fieldErrors,
 	}
 }
 
 // InternalServerError builds and returns a handler response for an internal error.
-func InternalServerError(err error) HandlerResponse {
+func InternalServerError(serviceName, functionName string, err error) HandlerResponse {
 	return HandlerResponse{
+		Service:    serviceName,
+		Function:   functionName,
 		StatusCode: 500,
 		Err:        err,
 	}

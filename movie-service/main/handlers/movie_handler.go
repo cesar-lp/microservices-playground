@@ -47,7 +47,7 @@ func MovieHandlerImpl(r repositories.MovieRepository) MovieHandler {
 func (h movieHandler) GetAllMovies() HandlerResponse {
 	movies, _, err := h.repository.GetAllMovies()
 	if err != nil {
-		return InternalServerError(err)
+		return InternalServerError("MovieHandler", "GetAllMovies", err)
 	}
 	return Ok(movies)
 }
@@ -57,9 +57,10 @@ func (h movieHandler) GetMovieById(id int) HandlerResponse {
 
 	if err != nil {
 		if gorm.IsRecordNotFoundError(err) {
-			return NotFound(errors.New("Movie not found for id " + strconv.Itoa(id)))
+			return NotFound("MovieHandler", "GetMovieById",
+				errors.New("Movie not found for id "+strconv.Itoa(id)))
 		}
-		return InternalServerError(err)
+		return InternalServerError("MovieHandler", "GetMovieById", err)
 	}
 	return Ok(movie)
 }
@@ -68,14 +69,14 @@ func (h movieHandler) CreateMovie(newMovie *models.Movie) HandlerResponse {
 	fieldErrors := newMovie.Validate()
 
 	if len(fieldErrors) > 0 {
-		return UnprocessableEntity(fieldErrors)
+		return UnprocessableEntity("MovieHandler", "CreateMovie", fieldErrors)
 	}
 
 	newMovie.Initialize()
 	createdMovie, _, err := h.repository.CreateMovie(newMovie)
 
 	if err != nil {
-		return InternalServerError(err)
+		return InternalServerError("MovieHandler", "CreateMovie", err)
 	}
 	return Created(createdMovie)
 }
@@ -84,16 +85,17 @@ func (h movieHandler) UpdateMovie(id int, movieToUpdate *models.Movie) HandlerRe
 	fieldErrors := movieToUpdate.Validate()
 
 	if len(fieldErrors) > 0 {
-		return UnprocessableEntity(fieldErrors)
+		return UnprocessableEntity("MovieHandler", "UpdateMovie", fieldErrors)
 	}
 
 	updatedMovie, _, err := h.repository.UpdateMovie(id, movieToUpdate)
 
 	if err != nil {
 		if gorm.IsRecordNotFoundError(err) {
-			return NotFound(errors.New("Movie not found for id " + strconv.Itoa(id)))
+			return NotFound("MovieHandler", "UpdateMovie",
+				errors.New("Movie not found for id "+strconv.Itoa(id)))
 		}
-		return InternalServerError(err)
+		return InternalServerError("MovieHandler", "UpdateMovie", err)
 	}
 	return Ok(updatedMovie)
 }
@@ -103,9 +105,10 @@ func (h movieHandler) DeleteMovieById(id int) HandlerResponse {
 
 	if err != nil {
 		if gorm.IsRecordNotFoundError(err) {
-			return NotFound(errors.New("Movie not found for id " + strconv.Itoa(id)))
+			return NotFound("MovieHandler", "DeleteMovieById",
+				errors.New("Movie not found for id "+strconv.Itoa(id)))
 		}
-		return InternalServerError(err)
+		return InternalServerError("MovieHandler", "DeleteMovieById", err)
 	}
 	return NoContent()
 }

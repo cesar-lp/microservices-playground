@@ -1,8 +1,6 @@
 package server
 
 import (
-	"fmt"
-	"log"
 	"net/http"
 
 	"github.com/cesar-lp/microservices-playground/movie-service/main/controllers"
@@ -11,6 +9,7 @@ import (
 	"github.com/cesar-lp/microservices-playground/movie-service/main/repositories"
 
 	"github.com/gorilla/mux"
+	log "github.com/sirupsen/logrus"
 )
 
 // Server structure.
@@ -36,13 +35,15 @@ func (server *Server) Run(address string) {
 	server.initializeDependencies()
 	defer server.db.instance.Close()
 
-	fmt.Println("Server up and running: listening to port" + address)
-	log.Fatal(http.ListenAndServe(address, server.router))
+	log.Info("Server up and running, listening to port" + address)
+	log.Panic(http.ListenAndServe(address, server.router))
 }
 
 func setupRouter() *mux.Router {
 	r := mux.NewRouter()
 	r.Use(middlewares.JSONMiddleware)
+	r.Use(middlewares.LoggingMiddleware)
+
 	return r
 }
 

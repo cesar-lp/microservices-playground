@@ -7,6 +7,8 @@ import (
 
 	"github.com/cesar-lp/microservices-playground/movie-service/main/common"
 	"github.com/cesar-lp/microservices-playground/movie-service/main/handlers"
+
+	log "github.com/sirupsen/logrus"
 )
 
 // BaseErrorResponse structure.
@@ -29,12 +31,15 @@ type ValidationErrorResponse struct {
 func ServerResponse(w http.ResponseWriter, r *http.Request, hr handlers.HandlerResponse) {
 	switch hr.StatusCode {
 	case 500:
+		logError(hr)
 		w.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(w).Encode(internalServerError(r.URL.Path, hr.Err.Error()))
 	case 422:
+		logError(hr)
 		w.WriteHeader(http.StatusUnprocessableEntity)
 		json.NewEncoder(w).Encode(ValidationError(r.URL.Path, hr.FieldErrors))
 	case 404:
+		logError(hr)
 		w.WriteHeader(http.StatusNotFound)
 		json.NewEncoder(w).Encode(ResourceNotFound(r.URL.Path, hr.Err.Error()))
 	case 204:
@@ -75,4 +80,8 @@ func internalServerError(path string, message string) BaseErrorResponse {
 		Path:      path,
 		Timestamp: time.Now(),
 	}
+}
+
+func logError(hr handlers.HandlerResponse) {
+	log.Errorf("(%s) - %s: %s", hr.Service, hr.Function, hr.Err.Error())
 }

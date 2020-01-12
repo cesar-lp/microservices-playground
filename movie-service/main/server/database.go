@@ -2,11 +2,12 @@ package server
 
 import (
 	"fmt"
-	"log"
 
 	"github.com/cesar-lp/microservices-playground/movie-service/main/models"
 	"github.com/cesar-lp/microservices-playground/movie-service/main/server/seeds"
+
 	"github.com/jinzhu/gorm"
+	log "github.com/sirupsen/logrus"
 )
 
 // Database structure.
@@ -36,15 +37,14 @@ func setupDB(host string, port int, user, password, name string, log bool) Datab
 func (db *Database) Connect() {
 	var err error
 
-	fmt.Println("Connecting to database...")
+	log.Infof("Connecting to database %s...", db.name)
 	DB_URL := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable",
 		db.host, db.port, db.user, db.password, db.name)
 
 	database, err := gorm.Open("postgres", DB_URL)
 
 	if err != nil {
-		fmt.Printf("Cannot connect to database")
-		panic(err)
+		log.Panicf("Cannot connect to database: %s", err)
 	}
 
 	if db.log {
@@ -52,28 +52,30 @@ func (db *Database) Connect() {
 	}
 
 	db.instance = database
-	fmt.Println("Connected to database")
+	log.Info("Connected to database")
 }
 
 // LoadSeeds migrates and loads into database existing models.
 func (db *Database) LoadSeeds() {
+	log.Info("Loading seeds...")
 	err := db.instance.Debug().DropTableIfExists(&models.Movie{}).Error
 
 	if err != nil {
-		log.Fatalf("Cannot drop table: %v", err)
+		log.Panicf("Cannot drop table: %v", err)
 	}
 
 	err = db.instance.Debug().AutoMigrate(&models.Movie{}).Error
 
 	if err != nil {
-		log.Fatalf("Cannot migrate table: %v", err)
+		log.Panicf("Cannot migrate table: %v", err)
 	}
 
 	for i, _ := range seeds.Movies {
 		err = db.instance.Debug().Model(&models.Movie{}).Create(&seeds.Movies[i]).Error
 
 		if err != nil {
-			log.Fatalf("Cannot seed movies table: %v", err)
+			log.Panicf("Cannot seed movies table: %v", err)
 		}
 	}
+	log.Info("Seeds loaded")
 }
