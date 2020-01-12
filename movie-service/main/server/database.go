@@ -3,6 +3,7 @@ package server
 import (
 	"fmt"
 
+	"github.com/cesar-lp/microservices-playground/movie-service/main/config"
 	"github.com/cesar-lp/microservices-playground/movie-service/main/models"
 	"github.com/cesar-lp/microservices-playground/movie-service/main/server/seeds"
 
@@ -21,15 +22,15 @@ type Database struct {
 	log      bool
 }
 
-func setupDB(host string, port int, user, password, name string, log bool) Database {
+func setupDB(db config.DBConfig, logDB bool) Database {
 	return Database{
 		instance: &gorm.DB{},
-		host:     host,
-		port:     port,
-		user:     user,
-		password: password,
-		name:     name,
-		log:      log,
+		host:     db.Host,
+		port:     db.Port,
+		user:     db.User,
+		password: db.Password,
+		name:     db.Name,
+		log:      logDB,
 	}
 }
 

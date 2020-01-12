@@ -3,6 +3,7 @@ package server
 import (
 	"net/http"
 
+	"github.com/cesar-lp/microservices-playground/movie-service/main/config"
 	"github.com/cesar-lp/microservices-playground/movie-service/main/controllers"
 	"github.com/cesar-lp/microservices-playground/movie-service/main/handlers"
 	"github.com/cesar-lp/microservices-playground/movie-service/main/middlewares"
@@ -19,9 +20,9 @@ type Server struct {
 }
 
 // Configure a server instance.
-func Configure(host string, port int, user, password, name string, logDB bool) Server {
+func Configure(dbConfig config.DBConfig, logDB bool) Server {
 	server := Server{
-		db:     setupDB(host, port, user, password, name, logDB),
+		db:     setupDB(dbConfig, logDB),
 		router: setupRouter(),
 	}
 

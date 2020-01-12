@@ -15,7 +15,6 @@ func JSONMiddleware(next http.Handler) http.Handler {
 	})
 }
 
-// TODO: improve logging - log to file
 // LoggingMiddleware logs each request and response
 func LoggingMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
