@@ -12,20 +12,21 @@ type AppConfig struct {
 }
 
 type DBConfig struct {
-	Host     string
-	Port     int
-	User     string
-	Password string
-	Name     string
+	Host           string
+	Port           int
+	User           string
+	Password       string
+	Name           string
+	LoggingEnabled bool
 }
 
 type ServerConfig struct {
 	Environment string
-	Address     string
+	Port        int
 }
 
 func Load() AppConfig {
-	viper.AddConfigPath("../")
+	viper.AddConfigPath(".")
 	viper.SetConfigName(".env")
 	viper.SetConfigType("env")
 
@@ -45,14 +46,15 @@ func buildConfig() AppConfig {
 	return AppConfig{
 		Server: ServerConfig{
 			Environment: viper.GetString("SERVER_ENVIRONMENT"),
-			Address:     viper.GetString("SERVER_ADDRESS"),
+			Port:        viper.GetInt("SERVER_PORT"),
 		},
 		DB: DBConfig{
-			Host:     viper.GetString("DB_HOST"),
-			Port:     viper.GetInt("DB_PORT"),
-			User:     viper.GetString("DB_USER"),
-			Password: viper.GetString("DB_PASSWORD"),
-			Name:     viper.GetString("DB_NAME"),
+			Host:           viper.GetString("DB_HOST"),
+			Port:           viper.GetInt("DB_PORT"),
+			User:           viper.GetString("DB_USER"),
+			Password:       viper.GetString("DB_PASSWORD"),
+			Name:           viper.GetString("DB_NAME"),
+			LoggingEnabled: viper.GetBool("DB_ENABLE_LOGGING"),
 		},
 	}
 }

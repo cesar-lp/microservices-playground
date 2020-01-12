@@ -7,10 +7,10 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/cesar-lp/microservices-playground/movie-service/main/common"
-	ctrl "github.com/cesar-lp/microservices-playground/movie-service/main/controllers"
-	"github.com/cesar-lp/microservices-playground/movie-service/main/middlewares"
-	"github.com/cesar-lp/microservices-playground/movie-service/main/models"
+	"github.com/cesar-lp/microservices-playground/movie-service/main/app/common"
+	ctrl "github.com/cesar-lp/microservices-playground/movie-service/main/app/controllers"
+	"github.com/cesar-lp/microservices-playground/movie-service/main/app/middlewares"
+	"github.com/cesar-lp/microservices-playground/movie-service/main/app/models"
 	mocks "github.com/cesar-lp/microservices-playground/movie-service/tests/handlers/mocks"
 	"github.com/cesar-lp/microservices-playground/movie-service/tests/utils"
 

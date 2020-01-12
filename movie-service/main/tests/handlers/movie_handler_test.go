@@ -4,9 +4,9 @@ import (
 	"strconv"
 	"testing"
 
-	"github.com/cesar-lp/microservices-playground/movie-service/main/common"
-	"github.com/cesar-lp/microservices-playground/movie-service/main/handlers"
-	"github.com/cesar-lp/microservices-playground/movie-service/main/models"
+	"github.com/cesar-lp/microservices-playground/movie-service/main/app/common"
+	"github.com/cesar-lp/microservices-playground/movie-service/main/app/handlers"
+	"github.com/cesar-lp/microservices-playground/movie-service/main/app/models"
 	mocks "github.com/cesar-lp/microservices-playground/movie-service/tests/repositories/mocks"
 
 	"github.com/stretchr/testify/assert"

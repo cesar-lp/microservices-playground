@@ -1,7 +1,7 @@
 package repositories
 
 import (
-	"github.com/cesar-lp/microservices-playground/movie-service/main/models"
+	"github.com/cesar-lp/microservices-playground/movie-service/main/app/models"
 
 	"github.com/jinzhu/gorm"
 )

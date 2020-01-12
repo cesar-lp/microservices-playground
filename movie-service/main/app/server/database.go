@@ -3,9 +3,9 @@ package server
 import (
 	"fmt"
 
-	"github.com/cesar-lp/microservices-playground/movie-service/main/config"
-	"github.com/cesar-lp/microservices-playground/movie-service/main/models"
-	"github.com/cesar-lp/microservices-playground/movie-service/main/server/seeds"
+	"github.com/cesar-lp/microservices-playground/movie-service/main/app/config"
+	"github.com/cesar-lp/microservices-playground/movie-service/main/app/models"
+	"github.com/cesar-lp/microservices-playground/movie-service/main/app/server/seeds"
 
 	"github.com/jinzhu/gorm"
 	log "github.com/sirupsen/logrus"
@@ -13,24 +13,24 @@ import (
 
 // Database structure.
 type Database struct {
-	instance *gorm.DB
-	host     string
-	port     int
-	user     string
-	password string
-	name     string
-	log      bool
+	instance       *gorm.DB
+	host           string
+	port           int
+	user           string
+	password       string
+	name           string
+	loggingEnabled bool
 }
 
-func setupDB(db config.DBConfig, logDB bool) Database {
+func setupDB(db config.DBConfig) Database {
 	return Database{
-		instance: &gorm.DB{},
-		host:     db.Host,
-		port:     db.Port,
-		user:     db.User,
-		password: db.Password,
-		name:     db.Name,
-		log:      logDB,
+		instance:       &gorm.DB{},
+		host:           db.Host,
+		port:           db.Port,
+		user:           db.User,
+		password:       db.Password,
+		name:           db.Name,
+		loggingEnabled: db.LoggingEnabled,
 	}
 }
 
@@ -48,7 +48,7 @@ func (db *Database) Connect() {
 		log.Panicf("Cannot connect to database: %s", err)
 	}
 
-	if db.log {
+	if db.loggingEnabled {
 		database = database.Debug()
 	}
 

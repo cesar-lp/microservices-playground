@@ -5,12 +5,10 @@ services:
     container_name: movie-service
     build: .
     ports:
-      - 8081:8081
+      - ${SERVER_PORT}:8081
     restart: on-failure
     depends_on:
       - movie-service-db
-    networks:
-      - movie-service
 
   movie-service-db:
     image: postgres:latest
@@ -22,10 +20,3 @@ services:
       - POSTGRES_HOST=${DB_HOST}
     ports:
       - '${DB_PORT}:5432'
-    networks:
-      - movie-service
-
-# To facilitate communication between containers
-networks:
-  movie-service:
-    driver: bridge

@@ -3,7 +3,7 @@ package models
 import (
 	"strconv"
 
-	"github.com/cesar-lp/microservices-playground/movie-service/main/common"
+	"github.com/cesar-lp/microservices-playground/movie-service/main/app/common"
 )
 
 // Movie structure.

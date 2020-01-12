@@ -6,8 +6,8 @@ import (
 
 	"github.com/DATA-DOG/go-sqlmock"
 
-	"github.com/cesar-lp/microservices-playground/movie-service/main/models"
-	"github.com/cesar-lp/microservices-playground/movie-service/main/repositories"
+	"github.com/cesar-lp/microservices-playground/movie-service/main/app/models"
+	"github.com/cesar-lp/microservices-playground/movie-service/main/app/repositories"
 	"github.com/cesar-lp/microservices-playground/movie-service/tests/utils"
 
 	"github.com/jinzhu/gorm"

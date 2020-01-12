@@ -1,6 +1,6 @@
 package handlers
 
-import "github.com/cesar-lp/microservices-playground/movie-service/main/common"
+import "github.com/cesar-lp/microservices-playground/movie-service/main/app/common"
 
 // HandlerResponse structure.
 type HandlerResponse struct {

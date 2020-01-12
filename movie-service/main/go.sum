@@ -45,6 +45,9 @@ github.com/cesar-lp/microservices-playground v0.0.0-20191227024822-b0f7c2903439 
 github.com/cesar-lp/microservices-playground v0.0.0-20200103000649-916809081867 h1:pb5jdIpBKqguk9Zk3cW0e98w7iBHw4Ci66Uhfxmi94o=
 github.com/cesar-lp/microservices-playground v0.0.0-20200107014031-39bf20988f20 h1:wsWjTM6xXnr4hJQIbgbw2CALfcwafuopt64spguzasw=
 github.com/cesar-lp/microservices-playground v0.0.0-20200109222536-c1c237f5ea00 h1:id2/LaJiklHkUFHIiv2P3oD+fmG1hDMQw76nXOoqbaI=
+github.com/cesar-lp/microservices-playground v0.0.0-20200112011744-8c0880bec6e6 h1:+FkFoz2A3Z0ZYhjavHoNF+6FKyFYZC/GIiaFfHojH4I=
+github.com/cesar-lp/microservices-playground/movie-service v0.0.0-20200112011744-8c0880bec6e6 h1:mh/Q4DQKI1X2IwtBU6nlnVZpHbzfBRAVK+Re9OsFh34=
+github.com/cesar-lp/microservices-playground/movie-service v0.0.0-20200112011744-8c0880bec6e6/go.mod h1:ujUi11i/PH3EdRI4F7PrW8b2FCxnShxJd6N72AAQ9gw=
 github.com/cespare/xxhash v1.1.0/go.mod h1:XrSqR1VqqWfGrhpAt58auRo0WTKS1nRRg3ghfAqPWnc=
 github.com/cespare/xxhash/v2 v2.1.1/go.mod h1:VGX0DQ3Q6kWi7AoAeZDth3/j3BFtOZR5XLFGgcrjCOs=
 github.com/chzyer/logex v1.1.10/go.mod h1:+Ywpsq7O8HXn0nuIou7OrIPyXbp3wmkHB+jjWRnGsAI=

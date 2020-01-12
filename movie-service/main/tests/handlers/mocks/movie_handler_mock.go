@@ -4,9 +4,9 @@ import (
 	"errors"
 	"strconv"
 
-	"github.com/cesar-lp/microservices-playground/movie-service/main/handlers"
-	"github.com/cesar-lp/microservices-playground/movie-service/main/models"
-	"github.com/cesar-lp/microservices-playground/movie-service/main/repositories"
+	"github.com/cesar-lp/microservices-playground/movie-service/main/app/handlers"
+	"github.com/cesar-lp/microservices-playground/movie-service/main/app/models"
+	"github.com/cesar-lp/microservices-playground/movie-service/main/app/repositories"
 	rMocks "github.com/cesar-lp/microservices-playground/movie-service/tests/repositories/mocks"
 )
 

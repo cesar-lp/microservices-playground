@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/cesar-lp/microservices-playground/movie-service/main/common"
-	"github.com/cesar-lp/microservices-playground/movie-service/main/handlers"
+	"github.com/cesar-lp/microservices-playground/movie-service/main/app/common"
+	"github.com/cesar-lp/microservices-playground/movie-service/main/app/handlers"
 
 	log "github.com/sirupsen/logrus"
 )
